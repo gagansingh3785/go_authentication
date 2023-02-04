@@ -1,0 +1,15 @@
+name: MEW_BACKEND
+on:
+  push:
+    branch:
+      - main
+
+env:
+  PROJECT_ID: &{{ secrets.GCE_PROJECT }}
+
+
+jobs:
+  echoing:
+    runs-on: self-hosted
+    steps:
+      - run: echo "Running jobs on self hosted runner"

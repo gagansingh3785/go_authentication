@@ -1,10 +1,10 @@
 package domain
 
 type User struct {
-	Username string `db:"username"`
-	Password string `db:"password"`
-	Email    string `db:"email"`
-	Phone    string `db:"phone"`
+	Username     string `db:"username"`
+	PasswordHash string `db:"password_hash"`
+	Email        string `db:"email"`
+	Phone        string `db:"phone"`
 }
 
 func (u User) GetUsername() string {
@@ -12,7 +12,7 @@ func (u User) GetUsername() string {
 }
 
 func (u User) GetPassword() string {
-	return u.Password
+	return u.PasswordHash
 }
 
 func (u User) GetEmail() string {

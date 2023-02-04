@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gagansingh3785/go_authentication/config"
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/database"
 	"github.com/gagansingh3785/go_authentication/server"
@@ -36,6 +37,11 @@ func setupAuthentication() error {
 		Addr:    fmt.Sprintf("%s:%s", constants.AUTHENTICATION_HOST, constants.PORT),
 		Handler: r,
 	}
+
+	//config: Setting up config for app
+	config.InitConfig()
+
+	fmt.Printf("%v", config.GlobalConfig.SendGrid)
 
 	//Starting the server
 	err = server.ListenAndServe()

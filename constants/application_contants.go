@@ -1,7 +1,10 @@
 package constants
 
 const (
-	//app constants
+	// general constants
+	CONTENT_TYPE = "application/json"
+
+	// app constants
 	PORT                = "3001"
 	AUTHENTICATION_HOST = "localhost"
 
@@ -12,4 +15,9 @@ const (
 	DB_PASSWORD = "postgres"
 	DB_NAME     = "authentication"
 	DB_SSLMODE  = "disable"
+
+	//sendgrid constants
+	SENDGRID_API_HOST     = "SENDGRID_API_HOST"
+	SENDGRID_API_ENDPOINT = "SENDGRID_API_ENDPOINT"
+	SENDGRID_API_KEY      = "SENDGRID_API_KEY"
 )

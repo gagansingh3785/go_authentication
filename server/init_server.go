@@ -5,6 +5,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	some  = "hello"
+	other = 123
+)
+
 func CreateNewRouter() *mux.Router {
 	router := mux.NewRouter()
 	registerRoutes(router)
@@ -18,4 +23,5 @@ func registerRoutes(router *mux.Router) {
 	router.Methods("Get").Path("/login").HandlerFunc(handlers.Login)
 	router.Methods("Post").Path("/login").HandlerFunc(handlers.HandleLogin)
 	router.Methods("Get").Path("/home").HandlerFunc(handlers.Home)
+	router.Methods("Post").Path("/send_message").HandlerFunc(handlers.SendMail)
 }
