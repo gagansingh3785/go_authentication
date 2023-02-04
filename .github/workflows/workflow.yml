@@ -13,3 +13,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: echo "Running jobs on self hosted runner"
+
+  deploy_test:
+    runs-on: self-hosted
+    steps:
+      - run: gcloud compute ssh --command 'whoami' mew-backend-production-vm-01 --zone us-central1-a
