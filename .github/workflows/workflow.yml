@@ -32,7 +32,7 @@ jobs:
         run: "export PATH=$PATH:/home/gagan/go/bin:$GOPATH && mkdir artifact && go build -o ./artifact && cp -r migrations ./artifact/"
 
 
-      - name: Set-Artifact-Name
+      - name: set-artifact-name
         id: artifact-name
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
@@ -43,4 +43,4 @@ jobs:
 
         with:
           path: 'artifact/'
-          destination: 'mew_backend_artifacts/artifact_${{ GITHUB_SHA }}'
+          destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
