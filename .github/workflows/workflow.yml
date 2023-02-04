@@ -27,12 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setting-Up-Go
-        run: "export PATH=$PATH:/home/gagan/go/bin:$GOPATH"
-
       - name: Create-Build
         id: create-build
-        run: "mkdir artifact && go build -o ./artifact && cp migrations ./artifact/"
+        run: "export PATH=$PATH:/home/gagan/go/bin:$GOPATH && mkdir artifact && go build -o ./artifact && cp migrations ./artifact/"
 
 
       - name: Set-Artifact-Name
