@@ -36,11 +36,9 @@ jobs:
         id: artifact-name
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - run: echo "${{ steps.artifact-name.outputs.short_sha }}"
-
       - name: Uploading Artifact
         uses: google-github-actions/upload-cloud-storage@v1
 
         with:
           path: 'artifact/'
-          destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
+          destination: 'mew_backend_artifacts/artifact_${{ vars.GITHUB_SHA }}'
