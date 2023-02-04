@@ -5,7 +5,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: &{{ secrets.GCE_PROJECT }}
+  PROJECT_ID: ${{ secrets.GCE_PROJECT }}
 
 
 jobs:
