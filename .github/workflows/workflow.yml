@@ -18,3 +18,28 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: gcloud compute ssh --command 'whoami' mew-backend-production-vm-01 --zone us-central1-a
+
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setting-Up-Go
+        run: "export PATH=$PATH:/home/gagan/go/bin:$GOPATH"
+
+      - name: Create-Build
+        id: create-build
+        run: "mkdir artifact && go build -o ./artifact && cp migrations ./artifact/"
+
+
+      - name: Set-Artifact-Name
+        id: artifact-name
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Uploading Artifact
+        uses: google-github-actions/upload-cloud-storage@v1
+
+        with:
+          path: 'artifact/'
+          destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'

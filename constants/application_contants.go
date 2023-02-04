@@ -5,7 +5,7 @@ const (
 	CONTENT_TYPE = "application/json"
 
 	// app constants
-	PORT                = "3001"
+	PORT                = "3002"
 	AUTHENTICATION_HOST = "localhost"
 
 	//database constants
