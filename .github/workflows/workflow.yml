@@ -43,4 +43,4 @@ jobs:
 
         with:
           path: 'artifact/'
-          destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
+          destination: 'mew_backend_artifacts/artifact_${{ GITHUB_SHA }}'
