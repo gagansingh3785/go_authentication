@@ -48,6 +48,7 @@ jobs:
   deploy:
     needs: build
     runs-on: self-hosted
+    environment: Production
     steps:
       - name: set-artifact-name
         id: artifact-name
