@@ -46,10 +46,12 @@ jobs:
           destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
 
   deploy:
-    - name: set-artifact-name
-      id: artifact-name
-      run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - runs-on: self-hosted
+    - steps:
+      - name: set-artifact-name
+        id: artifact-name
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: downloading-artifact
-      id: download-artifact
-      run: "gcloud compute ssh --command 'gsutil cp -r gs://mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}/artifact /home/gagan' mew-backend-production-vm-01 --zone us-central1-a"
+      - name: downloading-artifact
+        id: download-artifact
+        run: "gcloud compute ssh --command 'gsutil cp -r gs://mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}/artifact /home/gagan' mew-backend-production-vm-01 --zone us-central1-a"
