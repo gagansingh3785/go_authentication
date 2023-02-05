@@ -17,16 +17,16 @@ func setupAuthentication() error {
 	fmt.Println("Setting up authentication_app")
 
 	//Creating DB connection
-	err := database.CreateNewDBConn()
-	if err != nil {
-		panic(err)
-	}
+	//err := database.CreateNewDBConn()
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	//database.TestDatabaseConnection()
-	err = database.DBConn.Ping()
-	if err != nil {
-		panic(err)
-	}
+	//err = database.DBConn.Ping()
+	//if err != nil {
+	//	panic(err)
+	//}
 	fmt.Println("successfully created the database connection")
 
 	//Router: This returns a gorilla/mux router which takes paths and routes them to handlers
@@ -44,7 +44,7 @@ func setupAuthentication() error {
 	fmt.Printf("%v", config.GlobalConfig.SendGrid)
 
 	//Starting the server
-	err = server.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
