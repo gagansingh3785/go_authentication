@@ -46,6 +46,7 @@ jobs:
           destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
 
   deploy:
+    needs: build
     runs-on: self-hosted
     steps:
       - name: set-artifact-name
