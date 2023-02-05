@@ -46,8 +46,8 @@ jobs:
           destination: 'mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}'
 
   deploy:
-    - runs-on: self-hosted
-    - steps:
+    runs-on: self-hosted
+    steps:
       - name: set-artifact-name
         id: artifact-name
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
