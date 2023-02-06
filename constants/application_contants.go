@@ -6,7 +6,7 @@ const (
 
 	// app constants
 	PORT                = "3002"
-	AUTHENTICATION_HOST = "localhost"
+	AUTHENTICATION_HOST = ""
 
 	//database constants
 	DB_PORT     = "5432"
