@@ -31,13 +31,18 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 // Handling mail
 func SendMail(w http.ResponseWriter, r *http.Request) {
+	// Response Declaration
+	var handlerResp responses.SendMailResponse
 	// Request processing
 
 	sendMailRequest := &requests.SendMailRequest{}
 	err := json.NewDecoder(r.Body).Decode(sendMailRequest)
 	if err != nil {
-		fmt.Println("here1")
-		fmt.Fprintf(w, "error")
+		handlerResp = responses.SendMailResponse{
+			Message: "",
+			Error:   fmt.Errorf("please provide all the fields"),
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp)
 		return
 	}
 
@@ -71,7 +76,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 	// Response processing
-	handlerResp := responses.SendMailResponse{
+	handlerResp = responses.SendMailResponse{
 		Message: "Success! We will get back to you soon :)",
 		Error:   nil,
 	}
