@@ -33,18 +33,23 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 func SendMail(w http.ResponseWriter, r *http.Request) {
 	// Response Declaration
 	var handlerResp responses.SendMailResponse
-	// Request processing
 
+	// Request processing
 	sendMailRequest := &requests.SendMailRequest{}
 	err := json.NewDecoder(r.Body).Decode(sendMailRequest)
+
 	if err != nil {
+		fmt.Println(err.Error())
 		handlerResp = responses.SendMailResponse{
 			Message: "",
-			Error:   fmt.Errorf("please provide all the fields"),
+			Error:   "Please provide all the required fields",
 		}
 		WriteResponse(w, http.StatusBadRequest, handlerResp)
 		return
 	}
+
+	//logging request
+	fmt.Println(sendMailRequest)
 
 	// Domain processing and making API call to MailGrid
 	//url := config.GlobalConfig.SendGrid.APIHost + config.GlobalConfig.SendGrid.APIEndpoint
@@ -78,7 +83,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 	// Response processing
 	handlerResp = responses.SendMailResponse{
 		Message: "Success! We will get back to you soon :)",
-		Error:   nil,
+		Error:   "",
 	}
 	WriteResponse(w, http.StatusAccepted, handlerResp)
 }
