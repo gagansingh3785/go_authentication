@@ -29,7 +29,7 @@ func CreateNewDBConn() error {
 }
 
 func TestDatabaseConnection() error {
-	rows, err := DBConn.Query("SELECT * FROM temp_sser")
+	rows, err := DBConn.Query("SELECT * FROM pg_roles")
 	defer rows.Close()
 	var name string
 	var email string

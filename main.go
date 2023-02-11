@@ -19,6 +19,7 @@ func setupAuthentication() error {
 	//Creating DB connection
 	err := database.CreateNewDBConn()
 	if err != nil {
+		fmt.Println(err.Error())
 		panic(err)
 	}
 
