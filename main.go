@@ -16,7 +16,7 @@ func setupAuthentication() error {
 	defer database.DBConn.Close()
 	fmt.Println("Setting up authentication_app")
 
-	Creating DB connection
+	//Creating DB connection
 	err := database.CreateNewDBConn()
 	if err != nil {
 		panic(err)
@@ -44,7 +44,7 @@ func setupAuthentication() error {
 	fmt.Printf("%v", config.GlobalConfig.SendGrid)
 
 	//Starting the server
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
