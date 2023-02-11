@@ -10,10 +10,10 @@ const (
 
 	//database constants
 	DB_PORT     = "5432"
-	DB_HOST     = "localhost"
-	DB_USER     = "gagan"
+	DB_HOST     = "10.128.0.4"
+	DB_USER     = "postgres"
 	DB_PASSWORD = "postgres"
-	DB_NAME     = "authentication"
+	DB_NAME     = "postgres"
 	DB_SSLMODE  = "disable"
 
 	//sendgrid constants
