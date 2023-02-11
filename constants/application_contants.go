@@ -13,7 +13,7 @@ const (
 	DB_HOST     = "10.128.0.4"
 	DB_USER     = "postgres"
 	DB_PASSWORD = "postgres"
-	DB_NAME     = "postgres"
+	DB_NAME     = "go_authentication"
 	DB_SSLMODE  = "disable"
 
 	//sendgrid constants
