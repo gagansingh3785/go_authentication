@@ -94,6 +94,10 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, http.StatusAccepted, handlerResp)
 }
 
+func CorsHandler(w http.ResponseWriter, r *http.Request) {
+	WriteResponse(w, 200, "")
+}
+
 func WriteResponse(w http.ResponseWriter, status int, response any) {
 	enableCors(&w)
 	w.Header().Add("Content-Type", "application/json")

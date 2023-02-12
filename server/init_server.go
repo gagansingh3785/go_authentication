@@ -23,5 +23,6 @@ func registerRoutes(router *mux.Router) {
 	router.Methods("Get").Path("/login").HandlerFunc(handlers.Login)
 	router.Methods("Post").Path("/login").HandlerFunc(handlers.HandleLogin)
 	router.Methods("Get").Path("/home").HandlerFunc(handlers.Home)
-	router.Methods("Post", "Options").Path("/send_message").HandlerFunc(handlers.SendMail)
+	router.Methods("Post").Path("/send_message").HandlerFunc(handlers.SendMail)
+	router.Methods("Options").Path("/send_message").HandlerFunc(handlers.CorsHandler)
 }
