@@ -10,6 +10,8 @@ import (
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, POST")
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +29,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
+
 }
 
 func HandleRegister(w http.ResponseWriter, r *http.Request) {
