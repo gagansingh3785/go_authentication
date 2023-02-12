@@ -9,7 +9,8 @@ const (
 	AUTHENTICATION_HOST = ""
 
 	//database constants
-	DB_PORT     = "5432"
+	DB_PORT = "5432"
+	//DB_HOST = "localhost"
 	DB_HOST     = "10.128.0.4"
 	DB_USER     = "postgres"
 	DB_PASSWORD = "postgres"

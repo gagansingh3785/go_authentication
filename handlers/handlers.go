@@ -8,8 +8,13 @@ import (
 	"net/http"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func Home(w http.ResponseWriter, r *http.Request) {
 	//This is how templates are executed in golang
+	enableCors(&w)
 	fmt.Fprintf(w, "This is the home page")
 }
 
@@ -18,11 +23,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-
+	enableCors(&w)
 }
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-
+	enableCors(&w)
 }
 
 func HandleRegister(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +37,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 // Handling mail
 func SendMail(w http.ResponseWriter, r *http.Request) {
 	// Response Declaration
+	enableCors(&w)
 	var handlerResp responses.SendMailResponse
 
 	// Request processing
