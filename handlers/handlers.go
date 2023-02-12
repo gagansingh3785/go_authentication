@@ -102,4 +102,5 @@ func WriteResponse(w http.ResponseWriter, status int, response any) {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
+	fmt.Printf("%v", w.Header())
 }
