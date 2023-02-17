@@ -24,12 +24,13 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 			return resp
 		}
 		sessionID := getSessionID()
-		if err := repository.CreateSession(user.UUID, sessionID); err != nil {
+		session, err := repository.CreateSession(user.UUID, sessionID)
+		if err != nil {
 			resp.Error = constants.InternalServerError
 			return resp
 		}
 		resp.Message = "Login Successful"
-		resp.AddAllHeaders(sessionID)
+		resp.AddAllHeaders(session.SessionID)
 		return resp
 	default:
 		resp.Error = constants.InternalServerError
