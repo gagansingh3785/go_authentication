@@ -1,0 +1,3 @@
+ALTER TABLE app_user DROP COLUMN user_id;
+ALTER TABLE app_user DROP COLUMN role;
+ALTER TABLE app_user ADD COLUMN salt VARCHAR;

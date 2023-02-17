@@ -3,16 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/requests"
 	"github.com/gagansingh3785/go_authentication/responses"
+	"github.com/gagansingh3785/go_authentication/services"
 	"net/http"
 )
-
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
-}
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	//This is how templates are executed in golang
@@ -22,17 +18,62 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func Register(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "This is the register page")
 }
-
 func Login(w http.ResponseWriter, r *http.Request) {
-
+	loginRequest := requests.LoginRequest{}
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	if err != nil {
+		fmt.Println("Error while unmarshalling: ", err.Error())
+		handlerResp := responses.LoginResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		return
+	}
+	err = loginRequest.Validate()
+	if err != nil {
+		fmt.Println("Error while unmarshalling: ", err.Error())
+		handlerResp := responses.LoginResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		return
+	}
+	resp := services.LoginService(loginRequest)
+	if resp.Error != constants.EMPTY_STRING {
+		WriteResponse(w, http.StatusInternalServerError, resp)
+		return
+	}
+	resp.AddAllHeaders()
+	WriteResponse(w, http.StatusOK, resp)
 }
 
-func HandleLogin(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func HandleRegister(w http.ResponseWriter, r *http.Request) {
-
+func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	generateSessionRequest := requests.GenerateSessionRequest{}
+	err := json.NewDecoder(r.Body).Decode(&generateSessionRequest)
+	if err != nil {
+		handlerResp := responses.LoginResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		return
+	}
+	err = generateSessionRequest.Validate()
+	if err != nil {
+		handlerResp := responses.LoginResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		return
+	}
+	resp := services.GenerateSessionService(generateSessionRequest)
+	if resp.Error != constants.EMPTY_STRING {
+		WriteResponse(w, http.StatusInternalServerError, resp)
+	}
+	WriteResponse(w, http.StatusCreated, resp)
 }
 
 // Handling mail
@@ -45,7 +86,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(sendMailRequest)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("Error while unmarshalling: ", err.Error())
 		handlerResp = responses.SendMailResponse{
 			Message: "",
 			Error:   "Please provide all the required fields",
@@ -55,7 +96,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//logging request
-	fmt.Println(sendMailRequest)
+	//fmt.Println(sendMailRequest)
 
 	// Domain processing and making API call to MailGrid
 	//url := config.GlobalConfig.SendGrid.APIHost + config.GlobalConfig.SendGrid.APIEndpoint
@@ -99,7 +140,6 @@ func CorsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func WriteResponse(w http.ResponseWriter, status int, response any) {
-	enableCors(&w)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 	err := json.NewEncoder(w).Encode(response)

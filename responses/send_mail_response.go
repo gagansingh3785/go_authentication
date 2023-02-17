@@ -1,6 +1,11 @@
 package responses
 
 type SendMailResponse struct {
-	Message string `json:"message"`
-	Error   string `json:"error"`
+	Headers map[string]string `json:"-"`
+	Message string            `json:"message"`
+	Error   string            `json:"error"`
+}
+
+func (resp *SendMailResponse) AddHeader(key, value string) {
+	resp.Headers[key] = value
 }
