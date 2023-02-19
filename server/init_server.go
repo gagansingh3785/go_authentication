@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gagansingh3785/go_authentication/handlers"
+	"github.com/gagansingh3785/go_authentication/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -18,16 +19,10 @@ func CreateNewRouter() *mux.Router {
 
 func registerRoutes(router *mux.Router) {
 	//General Routes
-	router.Methods("Get").Path("/register").HandlerFunc(handlers.Register)
 	router.Methods("Post").Path("/register").HandlerFunc(handlers.Register)
 	router.Methods("Post").Path("/login").HandlerFunc(handlers.Login)
-	router.Methods("Get").Path("/home").HandlerFunc(handlers.Home)
+	router.Methods("Get").Path("/home").HandlerFunc(middleware.AuthoriseSession(handlers.Home))
 	router.Methods("Post").Path("/send_message").HandlerFunc(handlers.SendMail)
-	router.Methods("Options").Path("/send_message").HandlerFunc(handlers.CorsHandler)
+	router.Methods("Options").HandlerFunc(handlers.CorsHandler)
 	router.Methods("Post").Path("/generate_session").HandlerFunc(handlers.GenerateSessionHandler)
-
-	//TODO remove these
-	//router.Methods("Post").Path("/v1/predict").HandlerFunc(handlers.SendNormalETA)
-	//router.Methods("Post").Path("/v1/predict").HandlerFunc(handlers.Send5xx)
-	//router.Methods("Get").Path("/gofood/internal/v4/search").HandlerFunc(handlers.SendGourmetResponse)
 }

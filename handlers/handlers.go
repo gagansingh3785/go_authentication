@@ -16,7 +16,32 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This is the register page")
+	registerRequest := requests.RegisterRequest{}
+	err := json.NewDecoder(r.Body).Decode(&registerRequest)
+	if err != nil {
+		fmt.Println("Error while unmarshalling: ", err.Error())
+		handlerResp := responses.RegisterResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+	}
+	err = registerRequest.Validate()
+	if err != nil {
+		fmt.Println("Error while unmarshalling: ", err.Error())
+		handlerResp := responses.RegisterResponse{
+			Message: "",
+			Error:   "Please provide all the required fields",
+		}
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+	}
+	resp := services.RegisterService(registerRequest)
+	switch resp.Error {
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+	default:
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers)
+	}
 }
 func Login(w http.ResponseWriter, r *http.Request) {
 	loginRequest := requests.LoginRequest{}
@@ -27,7 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	err = loginRequest.Validate()
@@ -37,16 +62,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	resp := services.LoginService(loginRequest)
-	if resp.Error != constants.EMPTY_STRING {
-		WriteResponse(w, http.StatusInternalServerError, resp)
-		return
+
+	switch resp.Error {
+	case constants.InvalidCredentials:
+		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
+	case constants.EMPTY_STRING:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+	default:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
 	}
-	resp.AddAllHeaders()
-	WriteResponse(w, http.StatusOK, resp)
 }
 
 func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +85,7 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	err = generateSessionRequest.Validate()
@@ -66,14 +94,19 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	resp := services.GenerateSessionService(generateSessionRequest)
-	if resp.Error != constants.EMPTY_STRING {
-		WriteResponse(w, http.StatusInternalServerError, resp)
+
+	switch resp.Error {
+	case constants.InvalidCredentials:
+		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
+	case constants.EMPTY_STRING:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+	default:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
 	}
-	WriteResponse(w, http.StatusCreated, resp)
 }
 
 // Handling mail
@@ -91,7 +124,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 
@@ -132,19 +165,23 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 		Message: "Success! We will get back to you soon :)",
 		Error:   "",
 	}
-	WriteResponse(w, http.StatusAccepted, handlerResp)
+	WriteResponse(w, http.StatusAccepted, handlerResp, handlerResp.Headers)
 }
 
 func CorsHandler(w http.ResponseWriter, r *http.Request) {
-	WriteResponse(w, 200, "")
+	corsResponse := responses.CORSResponse{}
+	corsResponse.AddAllHeaders()
+	WriteResponse(w, 200, corsResponse, corsResponse.Headers)
 }
 
-func WriteResponse(w http.ResponseWriter, status int, response any) {
-	w.Header().Add("Content-Type", "application/json")
+func WriteResponse(w http.ResponseWriter, status int, response any, headers map[string]string) {
+	for key, value := range headers {
+		w.Header().Add(key, value)
+	}
+	// This method can only be called once per request
 	w.WriteHeader(status)
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	fmt.Printf("%v", w.Header())
 }

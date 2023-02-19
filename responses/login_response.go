@@ -19,6 +19,9 @@ func (resp *LoginResponse) AddCORSHeaders() {
 }
 
 func (resp *LoginResponse) AddAllHeaders() {
+	if resp.Headers == nil {
+		resp.Headers = make(map[string]string)
+	}
 	resp.AddCORSHeaders()
 	resp.AddHeader("Content-Type", "json")
 }

@@ -5,11 +5,11 @@ import (
 	"github.com/gagansingh3785/go_authentication/repository"
 	"github.com/gagansingh3785/go_authentication/requests"
 	"github.com/gagansingh3785/go_authentication/responses"
+	"github.com/google/uuid"
 )
 
 func GenerateSessionService(req requests.GenerateSessionRequest) responses.GenerateSessionResponse {
 	resp := responses.GenerateSessionResponse{}
-	resp.Headers = make(map[string]string)
 
 	username := req.Username
 	passwordHash := req.PasswordHash
@@ -23,14 +23,14 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 			resp.Error = constants.InvalidCredentials
 			return resp
 		}
-		sessionID := getSessionID()
+		sessionID := generateSessionID()
 		session, err := repository.CreateSession(user.UUID, sessionID)
 		if err != nil {
 			resp.Error = constants.InternalServerError
 			return resp
 		}
 		resp.Message = "Login Successful"
-		resp.AddAllHeaders(session.SessionID)
+		resp.AddAllHeaders(user.Username, session.SessionID)
 		return resp
 	default:
 		resp.Error = constants.InternalServerError
@@ -38,6 +38,7 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 	}
 }
 
-func getSessionID() string {
-	return ""
+func generateSessionID() string {
+	sessionID := uuid.New().String()
+	return sessionID
 }

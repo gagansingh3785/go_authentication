@@ -1,0 +1,1 @@
+ALTER TABLE app_sessions ADD CONSTRAINT unique_session_id UNIQUE(session_id);

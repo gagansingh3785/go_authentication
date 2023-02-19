@@ -9,7 +9,6 @@ import (
 
 func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	resp := responses.LoginResponse{}
-	resp.Headers = make(map[string]string)
 
 	username := req.Username
 	user, err := repository.GetUserByUsername(username)
@@ -19,13 +18,12 @@ func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	switch err {
 	case constants.ErrSQLNoRows:
 		resp.Error = constants.InvalidCredentials
-		return resp
 	case nil:
+		resp.AddAllHeaders()
 		resp.Salt = user.Salt
 		resp.PasswordHash = user.PasswordHash
-		return resp
 	default:
 		resp.Error = constants.InternalServerError
-		return resp
 	}
+	return resp
 }

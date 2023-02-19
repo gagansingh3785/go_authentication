@@ -2,7 +2,6 @@ package constants
 
 const (
 	// general constants
-	CONTENT_TYPE = "application/json"
 
 	// app constants
 	PORT                = "3002"
@@ -26,6 +25,13 @@ const (
 	SENDGRID_API_ENDPOINT = "SENDGRID_API_ENDPOINT"
 	SENDGRID_API_KEY      = "SENDGRID_API_KEY"
 
+	//Request Headers
+	SESSION_COOKIE = "Session-Cookie"
+	CONTENT_TYPE   = "application/json"
+
 	//miscellaneous constants
 	EMPTY_STRING = ""
+
+	// keys
+	MY_SECRET = "MY_SECRET"
 )
