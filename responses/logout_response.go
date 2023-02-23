@@ -1,7 +1,7 @@
 package responses
 
 type LogoutResponse struct {
-	Headers map[string]string `-`
+	Headers map[string]string `json:"-"`
 	Error   string            `json:"error"`
 	Message string            `json:"message"`
 }
