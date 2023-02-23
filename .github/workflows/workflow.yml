@@ -56,5 +56,4 @@ jobs:
 
       - run: "gcloud compute ssh --command 'sudo systemctl stop start-go-server.service' mew-backend-production-vm-01 --zone us-central1-a"
       - run: "gcloud compute ssh --command 'gsutil cp -r gs://mew_backend_artifacts/artifact_${{ steps.artifact-name.outputs.short_sha }}/artifact /home/gagan' mew-backend-production-vm-01 --zone us-central1-a"
-      - run: "gcloud compute ssh --command 'sudo systemctl start start-go-server.service' mew-backend-production-vm-01 --zone us-central1-a"
-
+      - run: "gcloud compute ssh --command 'export MY_SECRET={{secrets.MY_SECRET}} && sudo systemctl start start-go-server.service' mew-backend-production-vm-01 --zone us-central1-a"
