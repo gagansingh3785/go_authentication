@@ -35,15 +35,3 @@ func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	}
 	return resp
 }
-
-func isLoggedIn(userID string) (bool, error) {
-	_, err := repository.GetSessionFromUserID(userID)
-	switch err {
-	case constants.ErrSQLNoRows:
-		return false, nil
-	case nil:
-		return true, nil
-	default:
-		return false, err
-	}
-}

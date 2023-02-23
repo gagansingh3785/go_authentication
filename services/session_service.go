@@ -6,7 +6,6 @@ import (
 	"github.com/gagansingh3785/go_authentication/repository"
 	"github.com/gagansingh3785/go_authentication/requests"
 	"github.com/gagansingh3785/go_authentication/responses"
-	"github.com/google/uuid"
 )
 
 func GenerateSessionService(req requests.GenerateSessionRequest) responses.GenerateSessionResponse {
@@ -20,7 +19,7 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 		resp.Error = constants.InvalidCredentials
 		return resp
 	case nil:
-		if active, err := isSessionActive(user.UUID); err != nil {
+		if active, err := isLoggedIn(user.UUID); err != nil {
 			resp.Error = constants.InternalServerError
 			resp.Message = constants.InternalServerError
 			return resp
@@ -49,21 +48,4 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 		resp.Error = constants.InternalServerError
 		return resp
 	}
-}
-
-func isSessionActive(userID string) (bool, error) {
-	_, err := repository.GetSessionFromUserID(userID)
-	switch err {
-	case constants.ErrSQLNoRows:
-		return false, nil
-	case nil:
-		return true, nil
-	default:
-		return false, err
-	}
-}
-
-func generateSessionID() string {
-	sessionID := uuid.New().String()
-	return sessionID
 }

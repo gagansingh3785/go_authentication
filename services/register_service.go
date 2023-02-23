@@ -15,7 +15,7 @@ func RegisterService(registerRequest requests.RegisterRequest) responses.Registe
 	phone := registerRequest.Phone
 	passwordHash := registerRequest.PasswordHash
 	email := registerRequest.Email
-	if present, err := isDuplicateIdentifiePresent(username); err != nil {
+	if present, err := isDuplicateIdentifierPresent(username); err != nil {
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError
 		return resp
@@ -24,7 +24,7 @@ func RegisterService(registerRequest requests.RegisterRequest) responses.Registe
 		resp.Message = constants.UsernameTaken
 		return resp
 	}
-	if present, err := isDuplicateIdentifiePresent(email); err != nil {
+	if present, err := isDuplicateIdentifierPresent(email); err != nil {
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError
 		return resp
@@ -45,15 +45,4 @@ func RegisterService(registerRequest requests.RegisterRequest) responses.Registe
 		resp.Message = constants.InternalServerError
 	}
 	return resp
-}
-
-func isDuplicateIdentifiePresent(identifier string) (bool, error) {
-	_, err := repository.GetUserByEmailOrUsername(identifier)
-	if err == constants.ErrSQLNoRows {
-		return false, nil
-	}
-	if err != nil {
-		return false, err
-	}
-	return true, nil
 }

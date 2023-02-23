@@ -14,11 +14,11 @@ import (
 	"strings"
 )
 
-type requestHandlerFunc func(http.ResponseWriter, *http.Request)
+type requestHandlerFunc func(http.ResponseWriter, *http.Request, string)
 
 var randBytes = []byte{32, 12, 45, 54, 67, 42, 23, 200, 101, 234, 12, 222, 39, 91, 87, 45}
 
-func AuthoriseSession(next requestHandlerFunc) requestHandlerFunc {
+func AuthoriseSession(next requestHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionHeader := r.Header.Get(constants.SESSION_COOKIE)
 		if sessionHeader == "" {
@@ -55,23 +55,26 @@ func AuthoriseSession(next requestHandlerFunc) requestHandlerFunc {
 					Message: constants.SessionExpired,
 				}
 				handlers.WriteResponse(w, http.StatusUnauthorized, resp, map[string]string{})
-			} else {
-				next(w, r)
-				sessionCookie, err := encryptSessionHeader(w.Header().Get(constants.SESSION_COOKIE))
-				if err != nil {
-					resp := responses.CommonResponse{
-						Error:   constants.InternalServerError,
-						Message: constants.InternalServerError,
-					}
-					handlers.WriteResponse(w, http.StatusInternalServerError, resp, map[string]string{})
-					return
+				return
+			}
+
+			next(w, r, session.SessionID)
+			sessionCookie, err := encryptSessionHeader(w.Header().Get(constants.SESSION_COOKIE))
+			if err != nil {
+				resp := responses.CommonResponse{
+					Error:   constants.InternalServerError,
+					Message: constants.InternalServerError,
 				}
+				handlers.WriteResponse(w, http.StatusInternalServerError, resp, map[string]string{})
+				return
+			}
+			if sessionCookie != "" {
 				w.Header().Set(constants.SESSION_COOKIE, sessionCookie)
 			}
 		default:
 			resp := responses.CommonResponse{
 				Error:   constants.InternalServerError,
-				Message: "",
+				Message: constants.InternalServerError,
 			}
 			handlers.WriteResponse(w, http.StatusInternalServerError, resp, map[string]string{})
 		}
@@ -79,6 +82,9 @@ func AuthoriseSession(next requestHandlerFunc) requestHandlerFunc {
 }
 
 func encryptSessionHeader(sessionCookie string) (string, error) {
+	if sessionCookie == "" {
+		return "", nil
+	}
 	return encryptData(sessionCookie)
 }
 

@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request, sessionKey string) {
 	//This is how templates are executed in golang
 	fmt.Fprintf(w, "This is the home page")
 }
@@ -124,6 +124,20 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	case constants.InvalidCredentials:
 		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
+	case constants.EMPTY_STRING:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+	default:
+		resp.AddCORSHeaders()
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+	}
+}
+
+// Logout Handler
+func Logout(w http.ResponseWriter, r *http.Request, sessionKey string) {
+	fmt.Println("Logout Handler Called")
+	fmt.Println("Session Key: ", sessionKey)
+	resp := services.LogoutService(sessionKey)
+	switch resp.Error {
 	case constants.EMPTY_STRING:
 		WriteResponse(w, http.StatusOK, resp, resp.Headers)
 	default:
