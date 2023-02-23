@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/gagansingh3785/go_authentication/constants"
 	"os"
 )
@@ -26,5 +25,4 @@ func (c *Config) SetupMailGridConfig() {
 	c.SendGrid.APIHost = os.Getenv(constants.SENDGRID_API_HOST)
 	c.SendGrid.APIKey = os.Getenv(constants.SENDGRID_API_KEY)
 	c.SendGrid.APIEndpoint = os.Getenv(constants.SENDGRID_API_ENDPOINT)
-	fmt.Printf("%v", c.SendGrid)
 }

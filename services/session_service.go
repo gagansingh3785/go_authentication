@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/repository"
 	"github.com/gagansingh3785/go_authentication/requests"
@@ -19,6 +20,15 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 		resp.Error = constants.InvalidCredentials
 		return resp
 	case nil:
+		if active, err := isSessionActive(user.UUID); err != nil {
+			resp.Error = constants.InternalServerError
+			resp.Message = constants.InternalServerError
+			return resp
+		} else if active {
+			resp.Error = constants.AlreadyLoggedIn
+			resp.Message = constants.AlreadyLoggedIn
+			return resp
+		}
 		if user.PasswordHash != passwordHash {
 			resp.Error = constants.InvalidCredentials
 			return resp
@@ -26,15 +36,30 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 		sessionID := generateSessionID()
 		session, err := repository.CreateSession(user.UUID, sessionID)
 		if err != nil {
+			fmt.Println("Here &&&&: ", err.Error())
 			resp.Error = constants.InternalServerError
 			return resp
 		}
-		resp.Message = "Login Successful"
 		resp.AddAllHeaders(user.Username, session.SessionID)
+		if resp.Headers[constants.SESSION_COOKIE] == "" {
+			resp.Error = constants.InternalServerError
+		}
 		return resp
 	default:
 		resp.Error = constants.InternalServerError
 		return resp
+	}
+}
+
+func isSessionActive(userID string) (bool, error) {
+	_, err := repository.GetSessionFromUserID(userID)
+	switch err {
+	case constants.ErrSQLNoRows:
+		return false, nil
+	case nil:
+		return true, nil
+	default:
+		return false, err
 	}
 }
 

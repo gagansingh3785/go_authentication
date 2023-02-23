@@ -16,6 +16,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Register route called")
 	registerRequest := requests.RegisterRequest{}
 	err := json.NewDecoder(r.Body).Decode(&registerRequest)
 	if err != nil {
@@ -24,8 +25,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 	}
+	fmt.Printf("\n %+v \n", registerRequest)
 	err = registerRequest.Validate()
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
@@ -33,17 +36,22 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 	}
 	resp := services.RegisterService(registerRequest)
+	fmt.Printf("\n %+v \n", resp)
+
 	switch resp.Error {
 	case constants.InternalServerError:
+		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
 	default:
 		WriteResponse(w, http.StatusCreated, resp, resp.Headers)
 	}
 }
 func Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Login route called")
 	loginRequest := requests.LoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
@@ -52,9 +60,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
+	fmt.Printf("\n %+v \n", loginRequest)
 	err = loginRequest.Validate()
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
@@ -62,22 +72,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	resp := services.LoginService(loginRequest)
 
+	fmt.Printf("\n %+v \n", resp)
+
 	switch resp.Error {
 	case constants.InvalidCredentials:
+		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
 	case constants.EMPTY_STRING:
 		WriteResponse(w, http.StatusOK, resp, resp.Headers)
 	default:
+		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
 	}
 }
 
 func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Generate-Session route called")
 	generateSessionRequest := requests.GenerateSessionRequest{}
 	err := json.NewDecoder(r.Body).Decode(&generateSessionRequest)
 	if err != nil {
@@ -85,26 +101,33 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
+	fmt.Printf("\n %+v \n", generateSessionRequest)
 	err = generateSessionRequest.Validate()
 	if err != nil {
 		handlerResp := responses.LoginResponse{
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
+		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
 		return
 	}
 	resp := services.GenerateSessionService(generateSessionRequest)
 
+	fmt.Printf("\n %+v \n", resp)
+
 	switch resp.Error {
 	case constants.InvalidCredentials:
+		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
 	case constants.EMPTY_STRING:
 		WriteResponse(w, http.StatusOK, resp, resp.Headers)
 	default:
+		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
 	}
 }

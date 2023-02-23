@@ -11,6 +11,9 @@ func (resp *RegisterResponse) AddHeader(key, value string) {
 }
 
 func (resp *RegisterResponse) AddCORSHeaders() {
+	if resp.Headers == nil {
+		resp.Headers = make(map[string]string)
+	}
 	resp.AddHeader("Access-Control-Allow-Origin", "*")
 	resp.AddHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	resp.AddHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")

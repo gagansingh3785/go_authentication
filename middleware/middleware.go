@@ -86,7 +86,9 @@ func parseSessionHeader(sessionHeaderString string) (string, string) {
 	username := ""
 	sessionID := ""
 	sessionHeaderDecoded, err := base64.StdEncoding.DecodeString(sessionHeaderString)
+	fmt.Println("Session Header Decoded: ", sessionHeaderDecoded)
 	sessionHeader, err := decryptData(sessionHeaderDecoded)
+	fmt.Println("Session Header Decrypted: ", sessionHeader)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -95,6 +97,7 @@ func parseSessionHeader(sessionHeaderString string) (string, string) {
 		return username, sessionID
 	}
 	username, sessionID = parseResult[0], parseResult[1]
+	fmt.Println("Username and SessionID: ", username, sessionID)
 	return username, sessionID
 }
 
@@ -104,12 +107,14 @@ func encryptData(data string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("Session Header before encryption: ", data)
 	plainText := []byte(data)
 	cfb := cipher.NewCFBEncrypter(block, randBytes)
 	cipherText := make([]byte, len(plainText))
 	cfb.XORKeyStream(cipherText, plainText)
-	sessionHeaderDecode := base64.StdEncoding.EncodeToString(cipherText)
-	return sessionHeaderDecode, nil
+	sessionHeaderEncoded := base64.StdEncoding.EncodeToString(cipherText)
+	fmt.Println("Session Header after encryption: ", sessionHeaderEncoded)
+	return sessionHeaderEncoded, nil
 }
 
 func decryptData(data []byte) (string, error) {

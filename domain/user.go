@@ -3,11 +3,11 @@ package domain
 type User struct {
 	UUID         string `db:"uuid"`
 	Username     string `db:"username"`
-	PasswordHash string `db:"password_hash"`
+	PasswordHash string `db:"passwordhash"`
 	Email        string `db:"email"`
 	Phone        string `db:"phone"`
 	Salt         string `db:"salt"`
-	Role         int64  `db:"role"`
+	Role         int    `db:"role"`
 }
 
 func (u User) GetUsername() string {
