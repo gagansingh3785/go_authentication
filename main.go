@@ -23,9 +23,9 @@ func setupAuthentication() error {
 		panic(err)
 	}
 
-	database.TestDatabaseConnection()
 	err = database.DBConn.Ping()
 	if err != nil {
+		fmt.Println(err.Error())
 		panic(err)
 	}
 	fmt.Println("successfully created the database connection")
@@ -38,11 +38,6 @@ func setupAuthentication() error {
 		Addr:    fmt.Sprintf("%s:%s", constants.AUTHENTICATION_HOST, constants.PORT),
 		Handler: r,
 	}
-
-	//config: Setting up config for app
-	config.InitConfig()
-
-	fmt.Printf("%v", config.GlobalConfig.SendGrid)
 
 	//Starting the server
 	err = server.ListenAndServe()
@@ -59,6 +54,9 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "authentication_app"
 	app.Version = "0.0"
+
+	//Initialising config
+	config.InitConfig()
 
 	// This action is run when no subcommand is provided
 	app.Action = func(*cli.Context) error {

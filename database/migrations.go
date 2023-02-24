@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/gagansingh3785/go_authentication/config"
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -11,7 +12,14 @@ import (
 )
 
 func GetDBConnectURL() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", constants.DB_USER, constants.DB_PASSWORD, constants.DB_HOST, constants.DB_PORT, constants.DB_NAME)
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		config.GlobalConfig.DBConfig.DBUser,
+		config.GlobalConfig.DBConfig.DBPassword,
+		config.GlobalConfig.DBConfig.Host,
+		config.GlobalConfig.DBConfig.Port,
+		config.GlobalConfig.DBConfig.DBName,
+		config.GlobalConfig.DBConfig.SSLMode,
+	)
 }
 
 func ApplyMigrations() error {

@@ -1,14 +1,19 @@
 package config
 
 import (
-	"github.com/gagansingh3785/go_authentication/constants"
+	"fmt"
 	"os"
 )
 
 var GlobalConfig Config
 
-type Config struct {
-	SendGrid SendGrid
+type DBConfig struct {
+	Host       string
+	Port       string
+	DBName     string
+	DBPassword string
+	DBUser     string
+	SSLMode    string
 }
 
 type SendGrid struct {
@@ -17,12 +22,23 @@ type SendGrid struct {
 	APIEndpoint string
 }
 
-func InitConfig() {
-	GlobalConfig.SetupMailGridConfig()
+type Config struct {
+	DBConfig DBConfig
 }
 
-func (c *Config) SetupMailGridConfig() {
-	c.SendGrid.APIHost = os.Getenv(constants.SENDGRID_API_HOST)
-	c.SendGrid.APIKey = os.Getenv(constants.SENDGRID_API_KEY)
-	c.SendGrid.APIEndpoint = os.Getenv(constants.SENDGRID_API_ENDPOINT)
+func SetupDBConfig() DBConfig {
+	dbConfig := DBConfig{
+		Host:       os.Getenv("DB_HOST"),
+		Port:       os.Getenv("DB_PORT"),
+		DBName:     os.Getenv("DB_NAME"),
+		DBPassword: os.Getenv("DB_PASSWORD"),
+		DBUser:     os.Getenv("DB_USER"),
+		SSLMode:    os.Getenv("SSL_MODE"),
+	}
+	return dbConfig
+}
+
+func InitConfig() {
+	GlobalConfig.DBConfig = SetupDBConfig()
+	fmt.Printf("%+v \n", GlobalConfig.DBConfig)
 }

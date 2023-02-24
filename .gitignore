@@ -1,5 +1,7 @@
-Makefile
 
 personal
 
 out
+
+local.env
+prod.env
