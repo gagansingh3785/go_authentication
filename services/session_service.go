@@ -39,10 +39,8 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 			resp.Error = constants.InternalServerError
 			return resp
 		}
-		resp.AddAllHeaders(user.Username, session.SessionID)
-		if resp.Headers[constants.SESSION_COOKIE] == "" {
-			resp.Error = constants.InternalServerError
-		}
+		resp.AddAllHeaders()
+		resp.AddSessionCookie(user.Username, session.SessionID)
 		return resp
 	default:
 		resp.Error = constants.InternalServerError

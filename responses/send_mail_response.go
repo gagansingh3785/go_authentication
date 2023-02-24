@@ -2,6 +2,7 @@ package responses
 
 type SendMailResponse struct {
 	Headers map[string]string `json:"-"`
+	Cookies map[string]string `json:"-"`
 	Message string            `json:"message"`
 	Error   string            `json:"error"`
 }

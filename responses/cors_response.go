@@ -2,6 +2,7 @@ package responses
 
 type CORSResponse struct {
 	Headers map[string]string `json:"-"`
+	Cookies map[string]string `json:"-"`
 }
 
 func (resp *CORSResponse) AddCORSHeaders() {

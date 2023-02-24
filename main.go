@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gagansingh3785/go_authentication/config"
 	"github.com/gagansingh3785/go_authentication/constants"
@@ -13,24 +12,7 @@ import (
 	"os"
 )
 
-func temp() {
-	type user struct {
-		Name    string  `json:"name"`
-		Number  int     `json:"number"`
-		Fnumber float64 `json:"f_number`
-	}
-	u := &user{}
-	data := []byte(`{"name": "gagan", "number": 1, "f_number": 1.2}`)
-	fmt.Println(data)
-	err := json.Unmarshal(data, u)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Printf("%+v", u)
-}
-
 func setupAuthentication() error {
-	temp()
 	defer database.DBConn.Close()
 	fmt.Println("Setting up authentication_app")
 

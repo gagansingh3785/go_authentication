@@ -1,7 +1,10 @@
 package responses
 
+import "github.com/gagansingh3785/go_authentication/constants"
+
 type RegisterResponse struct {
 	Headers map[string]string `json:"-"`
+	Cookies map[string]string `json:"-"`
 	Message string            `json:"message"`
 	Error   string            `json:"error"`
 }
@@ -24,5 +27,5 @@ func (resp *RegisterResponse) AddAllHeaders() {
 		resp.Headers = make(map[string]string)
 	}
 	resp.AddCORSHeaders()
-	resp.AddHeader("Content-Type", "json")
+	resp.AddHeader(constants.CONTENT_TYPE_KEY, constants.CONTENT_TYPE_VALUE)
 }

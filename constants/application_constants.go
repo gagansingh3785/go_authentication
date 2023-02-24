@@ -9,8 +9,8 @@ const (
 
 	//database constants
 	DB_PORT = "5432"
-	//DB_HOST = "localhost"
-	DB_HOST     = "10.128.0.4"
+	DB_HOST = "localhost"
+	//DB_HOST     = "10.128.0.4"
 	DB_USER     = "postgres"
 	DB_PASSWORD = "postgres"
 	DB_NAME     = "go_authentication"
@@ -26,8 +26,11 @@ const (
 	SENDGRID_API_KEY      = "SENDGRID_API_KEY"
 
 	//Request Headers
-	SESSION_COOKIE = "Session-Cookie"
-	CONTENT_TYPE   = "application/json"
+	SESSION_COOKIE     = "SessionID"
+	CONTENT_TYPE_KEY   = "Content-Type"
+	CONTENT_TYPE_VALUE = "application/json"
+
+	//SESSION_COOKIE = "SessionID"
 
 	//miscellaneous constants
 	EMPTY_STRING = ""

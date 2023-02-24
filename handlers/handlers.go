@@ -11,7 +11,7 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request, sessionKey string) {
-	//This is how templates are executed in golang
+	fmt.Println("Home page called with sessionId: ", sessionKey)
 	fmt.Fprintf(w, "This is the home page")
 }
 
@@ -26,7 +26,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 	}
 	fmt.Printf("\n %+v \n", registerRequest)
 	err = registerRequest.Validate()
@@ -37,7 +37,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 	}
 	resp := services.RegisterService(registerRequest)
 	fmt.Printf("\n %+v \n", resp)
@@ -45,9 +45,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	switch resp.Error {
 	case constants.InternalServerError:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	default:
-		WriteResponse(w, http.StatusCreated, resp, resp.Headers)
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
 	}
 }
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +61,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
 	fmt.Printf("\n %+v \n", loginRequest)
@@ -73,7 +73,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
 	resp := services.LoginService(loginRequest)
@@ -83,12 +83,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	switch resp.Error {
 	case constants.InvalidCredentials:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
+		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers, resp.Cookies)
 	case constants.EMPTY_STRING:
-		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
 
@@ -102,7 +102,7 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
 	fmt.Printf("\n %+v \n", generateSessionRequest)
@@ -113,7 +113,7 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Error:   "Please provide all the required fields",
 		}
 		handlerResp.AddCORSHeaders()
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
 	resp := services.GenerateSessionService(generateSessionRequest)
@@ -123,12 +123,12 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	switch resp.Error {
 	case constants.InvalidCredentials:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers)
+		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers, resp.Cookies)
 	case constants.EMPTY_STRING:
-		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
 
@@ -139,10 +139,10 @@ func Logout(w http.ResponseWriter, r *http.Request, sessionKey string) {
 	resp := services.LogoutService(sessionKey)
 	switch resp.Error {
 	case constants.EMPTY_STRING:
-		WriteResponse(w, http.StatusOK, resp, resp.Headers)
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
 		resp.AddCORSHeaders()
-		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers)
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
 
@@ -161,7 +161,7 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers)
+		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
 
@@ -202,18 +202,27 @@ func SendMail(w http.ResponseWriter, r *http.Request) {
 		Message: "Success! We will get back to you soon :)",
 		Error:   "",
 	}
-	WriteResponse(w, http.StatusAccepted, handlerResp, handlerResp.Headers)
+	WriteResponse(w, http.StatusAccepted, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 }
 
 func CorsHandler(w http.ResponseWriter, r *http.Request) {
 	corsResponse := responses.CORSResponse{}
 	corsResponse.AddAllHeaders()
-	WriteResponse(w, 200, corsResponse, corsResponse.Headers)
+	WriteResponse(w, 200, corsResponse, corsResponse.Headers, corsResponse.Cookies)
 }
 
-func WriteResponse(w http.ResponseWriter, status int, response any, headers map[string]string) {
+func WriteResponse(w http.ResponseWriter, status int, response any, headers, cookies map[string]string) {
+	//Setting Response Headers
 	for key, value := range headers {
 		w.Header().Add(key, value)
+	}
+	//Setting Response Cookies
+	for key, value := range cookies {
+		cookie := &http.Cookie{
+			Name:  key,
+			Value: value,
+		}
+		http.SetCookie(w, cookie)
 	}
 	// This method can only be called once per request
 	w.WriteHeader(status)
