@@ -43,6 +43,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("\n %+v \n", resp)
 
 	switch resp.Error {
+	case constants.UsernameTaken, constants.EmailAlreadyTaken:
+		resp.AddCORSHeaders()
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 	case constants.InternalServerError:
 		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
