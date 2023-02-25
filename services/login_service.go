@@ -21,7 +21,6 @@ func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	case nil:
 		resp.AddAllHeaders()
 		resp.Salt = user.Salt
-		resp.PasswordHash = user.PasswordHash
 	default:
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError
