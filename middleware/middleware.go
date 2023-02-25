@@ -14,30 +14,37 @@ import (
 	"strings"
 )
 
-type requestHandlerFunc func(http.ResponseWriter, *http.Request, string)
+type requestHandlerFunc func(http.ResponseWriter, *http.Request)
 
 var randBytes = []byte{32, 12, 45, 54, 67, 42, 23, 200, 101, 234, 12, 222, 39, 91, 87, 45}
 
-func AuthoriseSession(next requestHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
+func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string)) requestHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := r.Cookie(constants.SESSION_COOKIE)
 		if err != nil {
 			resp := responses.CommonResponse{
 				Error:   constants.InvalidCredentials,
-				Message: "",
+				Message: constants.InvalidCredentials,
 			}
 			handlers.WriteResponse(w, http.StatusUnauthorized, resp, map[string]string{}, map[string]string{})
 			return
 		}
+		http.SetCookie(w, sessionCookie)
 		username, sessionID := parseSessionHeader(sessionCookie.Value)
 		user, err := repository.GetUserByUsername(username)
 		if err != nil {
 			if err == constants.ErrSQLNoRows {
 				resp := responses.CommonResponse{
 					Error:   constants.InvalidCredentials,
-					Message: "",
+					Message: constants.InvalidCredentials,
 				}
 				handlers.WriteResponse(w, http.StatusUnauthorized, resp, map[string]string{}, map[string]string{})
+			} else {
+				resp := responses.CommonResponse{
+					Error:   constants.InternalServerError,
+					Message: constants.InternalServerError,
+				}
+				handlers.WriteResponse(w, http.StatusInternalServerError, resp, map[string]string{}, map[string]string{})
 			}
 		}
 		session, err := repository.GetSessionFromUserID(user.UUID)

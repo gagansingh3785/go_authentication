@@ -19,20 +19,16 @@ func GenerateSessionService(req requests.GenerateSessionRequest) responses.Gener
 		resp.Error = constants.InvalidCredentials
 		return resp
 	case nil:
-		if active, err := isLoggedIn(user.UUID); err != nil {
-			resp.Error = constants.InternalServerError
-			resp.Message = constants.InternalServerError
-			return resp
-		} else if active {
-			resp.Error = constants.AlreadyLoggedIn
-			resp.Message = constants.AlreadyLoggedIn
-			return resp
-		}
 		if user.PasswordHash != passwordHash {
 			resp.Error = constants.InvalidCredentials
 			return resp
 		}
 		sessionID := generateSessionID()
+		err := repository.DeleteSessionByUserID(user.UUID)
+		if err != nil {
+			resp.Error = constants.InternalServerError
+			return resp
+		}
 		session, err := repository.CreateSession(user.UUID, sessionID)
 		if err != nil {
 			fmt.Println("Here &&&&: ", err.Error())

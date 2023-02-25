@@ -17,21 +17,14 @@ func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	switch err {
 	case constants.ErrSQLNoRows:
 		resp.Error = constants.InvalidCredentials
+		resp.Message = constants.InvalidCredentials
 	case nil:
-		if loggedIn, err := isLoggedIn(user.UUID); err != nil {
-			resp.Error = constants.InternalServerError
-			resp.Message = constants.InternalServerError
-			return resp
-		} else if loggedIn {
-			resp.Error = constants.AlreadyLoggedIn
-			resp.Message = constants.AlreadyLoggedIn
-			return resp
-		}
 		resp.AddAllHeaders()
 		resp.Salt = user.Salt
 		resp.PasswordHash = user.PasswordHash
 	default:
 		resp.Error = constants.InternalServerError
+		resp.Message = constants.InternalServerError
 	}
 	return resp
 }

@@ -11,18 +11,6 @@ func generateSessionID() string {
 	return sessionID
 }
 
-func isLoggedIn(userID string) (bool, error) {
-	_, err := repository.GetSessionFromUserID(userID)
-	switch err {
-	case constants.ErrSQLNoRows:
-		return false, nil
-	case nil:
-		return true, nil
-	default:
-		return false, err
-	}
-}
-
 func isDuplicateIdentifierPresent(identifier string) (bool, error) {
 	_, err := repository.GetUserByEmailOrUsername(identifier)
 	if err == constants.ErrSQLNoRows {

@@ -10,8 +10,10 @@ import (
 	"net/http"
 )
 
-func Home(w http.ResponseWriter, r *http.Request, sessionKey string) {
-	fmt.Println("Home page called with sessionId: ", sessionKey)
+func Home(w http.ResponseWriter, r *http.Request, sessionCookieValue string) {
+	fmt.Println("Home page called with sessionCookie: ", sessionCookieValue)
+
+	_ = services.HomeService(requests.HomeRequest{})
 	fmt.Fprintf(w, "This is the home page")
 }
 
@@ -25,29 +27,26 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 	}
-	fmt.Printf("\n %+v \n", registerRequest)
+
 	err = registerRequest.Validate()
+
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
 		handlerResp := responses.RegisterResponse{
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 	}
+
 	resp := services.RegisterService(registerRequest)
-	fmt.Printf("\n %+v \n", resp)
 
 	switch resp.Error {
 	case constants.UsernameTaken, constants.EmailAlreadyTaken:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 	case constants.InternalServerError:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	default:
 		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
@@ -63,7 +62,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
@@ -75,7 +73,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
@@ -85,12 +82,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	switch resp.Error {
 	case constants.InvalidCredentials:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers, resp.Cookies)
 	case constants.EMPTY_STRING:
 		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
@@ -104,7 +99,6 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
@@ -115,7 +109,6 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 			Error:   "Please provide all the required fields",
 		}
-		handlerResp.AddCORSHeaders()
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
 	}
@@ -125,12 +118,10 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch resp.Error {
 	case constants.InvalidCredentials:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusUnauthorized, resp, resp.Headers, resp.Cookies)
 	case constants.EMPTY_STRING:
 		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
@@ -142,9 +133,9 @@ func Logout(w http.ResponseWriter, r *http.Request, sessionKey string) {
 	resp := services.LogoutService(sessionKey)
 	switch resp.Error {
 	case constants.EMPTY_STRING:
+		http.SetCookie(w, &http.Cookie{Name: "SessionID", Value: ""})
 		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	default:
-		resp.AddCORSHeaders()
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	}
 }
@@ -216,6 +207,7 @@ func CorsHandler(w http.ResponseWriter, r *http.Request) {
 
 func WriteResponse(w http.ResponseWriter, status int, response any, headers, cookies map[string]string) {
 	//Setting Response Headers
+	addCORSHeaders(headers)
 	for key, value := range headers {
 		w.Header().Add(key, value)
 	}
@@ -233,4 +225,13 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
+}
+
+func addCORSHeaders(headers map[string]string) {
+	if headers == nil {
+		headers = make(map[string]string)
+	}
+	headers["Access-Control-Allow-Origin"] = "*"
+	headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
+	headers["Access-Control-Allow-Headers"] = "Accept, Content-Type, Content-Length, Authorization"
 }

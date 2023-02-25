@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/repository"
 	"github.com/gagansingh3785/go_authentication/requests"
@@ -10,11 +9,13 @@ import (
 
 func RegisterService(registerRequest requests.RegisterRequest) responses.RegisterResponse {
 	resp := responses.RegisterResponse{}
+
 	username := registerRequest.Username
 	salt := registerRequest.Salt
 	phone := registerRequest.Phone
 	passwordHash := registerRequest.PasswordHash
 	email := registerRequest.Email
+
 	if present, err := isDuplicateIdentifierPresent(username); err != nil {
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError
@@ -33,10 +34,10 @@ func RegisterService(registerRequest requests.RegisterRequest) responses.Registe
 		resp.Message = constants.EmailAlreadyTaken
 		return resp
 	}
-	user, err := repository.CreateNewUser(username, email, salt, phone, passwordHash, 1)
+
+	_, err := repository.CreateNewUser(username, email, salt, phone, passwordHash, 1)
 	switch err {
 	case nil:
-		fmt.Printf("\n %+v \n", user)
 		resp.Error = ""
 		resp.Message = "Registration Successful :)"
 		resp.AddAllHeaders()
