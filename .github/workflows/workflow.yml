@@ -18,7 +18,7 @@ jobs:
     needs: echoing
     runs-on: self-hosted
     steps:
-      - run: gcloud compute ssh --command 'whoami' mew-backend-production-vm-01 --zone us-central1-a
+      - run: gcloud compute ssh --command 'whoami' mew-backend-production-vm-02 --zone us-central1-a
 
   build:
     needs: deploy_test
