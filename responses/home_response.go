@@ -2,13 +2,16 @@ package responses
 
 import (
 	"github.com/gagansingh3785/go_authentication/constants"
+	"github.com/gagansingh3785/go_authentication/domain"
 )
 
 type HomeResponse struct {
-	Headers map[string]string `json:"-"`
-	Cookies map[string]string `json:"-"`
-	Message string            `json:"message"`
-	Error   string            `json:"error"`
+	Headers  map[string]string `json:"-"`
+	Cookies  map[string]string `json:"-"`
+	Articles []domain.Article  `json:"articles"`
+	Count    int               `json:"total_count"`
+	Message  string            `json:"message"`
+	Error    string            `json:"error"`
 }
 
 func (resp *HomeResponse) AddHeader(key, value string) {

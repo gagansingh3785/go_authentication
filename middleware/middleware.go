@@ -18,7 +18,7 @@ type requestHandlerFunc func(http.ResponseWriter, *http.Request)
 
 var randBytes = []byte{32, 12, 45, 54, 67, 42, 23, 200, 101, 234, 12, 222, 39, 91, 87, 45}
 
-func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string)) requestHandlerFunc {
+func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string, string)) requestHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, err := r.Cookie(constants.SESSION_COOKIE)
 		if err != nil {
@@ -64,7 +64,7 @@ func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string)) req
 				handlers.WriteResponse(w, http.StatusUnauthorized, resp, map[string]string{}, map[string]string{})
 				return
 			}
-			next(w, r, session.SessionID)
+			next(w, r, session.SessionID, username)
 		default:
 			resp := responses.CommonResponse{
 				Error:   constants.InternalServerError,

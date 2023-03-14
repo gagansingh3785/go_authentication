@@ -12,7 +12,7 @@ import (
 )
 
 func GetDBConnectURL() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		config.GlobalConfig.DBConfig.DBUser,
 		config.GlobalConfig.DBConfig.DBPassword,
 		config.GlobalConfig.DBConfig.Host,

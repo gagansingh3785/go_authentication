@@ -10,17 +10,18 @@ const (
 	//database table constants
 	USER_TABLE     = "app_user"
 	SESSIONS_TABLE = "app_sessions"
+	ARTICLE_TABLE  = "app_articles"
 
 	//Request Headers
 	SESSION_COOKIE     = "SessionID"
 	CONTENT_TYPE_KEY   = "Content-Type"
 	CONTENT_TYPE_VALUE = "application/json"
 
-	//SESSION_COOKIE = "SessionID"
-
 	//miscellaneous constants
 	EMPTY_STRING = ""
 
 	// keys
 	MY_SECRET = "MY_SECRET"
+
+	PAGE_SIZE = 10
 )

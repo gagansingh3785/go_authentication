@@ -1,0 +1,1 @@
+DROP SEQUENCE IF EXISTS next_article_id_val;

@@ -6,6 +6,7 @@ import (
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/database"
 	"github.com/gagansingh3785/go_authentication/domain"
+	"time"
 )
 
 //queries
@@ -16,6 +17,7 @@ const createSessionQuery = "INSERT INTO " + constants.SESSIONS_TABLE + " (user_i
 const findByUserIDSessionQuery = "SELECT user_id, session_id FROM " + constants.SESSIONS_TABLE + "  WHERE user_id = $1"
 const deleteSessionByUserIDQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE user_id = $1"
 const deleteSessionBySessionIDQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE session_id = $1"
+const clearOldSessionsQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE $1 - created_time > '0 days 00:01:00'"
 
 func CreateSession(userID, sessionID string) (domain.Session, error) {
 	session := domain.Session{}
@@ -63,6 +65,15 @@ func DeleteSessionBySessionID(sessionID string) error {
 			fmt.Println("Logout &&&&&&&&", err.Error())
 			return nil
 		}
+		return err
+	}
+	return nil
+}
+
+func ClearOldSessions(currentTime time.Time) error {
+	_, err := database.DBConn.Query(clearOldSessionsQuery, currentTime)
+	if err != nil {
+		fmt.Println("ClearSessionQuery: ", err.Error())
 		return err
 	}
 	return nil

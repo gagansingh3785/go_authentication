@@ -10,11 +10,36 @@ import (
 	"net/http"
 )
 
-func Home(w http.ResponseWriter, r *http.Request, sessionCookieValue string) {
-	fmt.Println("Home page called with sessionCookie: ", sessionCookieValue)
-
-	_ = services.HomeService(requests.HomeRequest{})
-	fmt.Fprintf(w, "This is the home page")
+func Home(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Println("Home page called with sessionCookie: ", sessionKey)
+	homeRequest := requests.HomeRequest{}
+	err := json.NewDecoder(r.Body).Decode(&homeRequest)
+	if err != nil {
+		resp := responses.HomeResponse{
+			Error:   constants.BadRequest,
+			Message: constants.BadRequest,
+		}
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	err = homeRequest.Validate()
+	if err != nil {
+		resp := responses.HomeResponse{
+			Error:   constants.BadRequest,
+			Message: constants.BadRequest,
+		}
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	resp := services.HomeService(homeRequest, username, sessionKey)
+	switch resp.Error {
+	case constants.ArticlePageNotFound:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.EMPTY_STRING:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	}
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -96,8 +121,8 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&generateSessionRequest)
 	if err != nil {
 		handlerResp := responses.LoginResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
+			Message: constants.BadRequest,
+			Error:   constants.BadRequest,
 		}
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
@@ -106,8 +131,8 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	err = generateSessionRequest.Validate()
 	if err != nil {
 		handlerResp := responses.LoginResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
+			Message: constants.BadRequest,
+			Error:   constants.BadRequest,
 		}
 		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
 		return
@@ -127,7 +152,7 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Logout Handler
-func Logout(w http.ResponseWriter, r *http.Request, sessionKey string) {
+func Logout(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
 	fmt.Println("Logout Handler Called")
 	fmt.Println("Session Key: ", sessionKey)
 	resp := services.LogoutService(sessionKey)
@@ -140,63 +165,32 @@ func Logout(w http.ResponseWriter, r *http.Request, sessionKey string) {
 	}
 }
 
-// Handling mail
-func SendMail(w http.ResponseWriter, r *http.Request) {
-	// Response Declaration
-	var handlerResp responses.SendMailResponse
-
-	// Request processing
-	sendMailRequest := &requests.SendMailRequest{}
-	err := json.NewDecoder(r.Body).Decode(sendMailRequest)
-
+func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Printf("Write Handler Called username=%s sessionID=%s\n", username, sessionKey)
+	writeRequest := requests.WriteRequest{}
+	err := json.NewDecoder(r.Body).Decode(&writeRequest)
 	if err != nil {
-		fmt.Println("Error while unmarshalling: ", err.Error())
-		handlerResp = responses.SendMailResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
+		resp := responses.WriteResponse{
+			Error:   constants.BadRequest,
+			Message: constants.BadRequest,
 		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
-		return
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 	}
-
-	//logging request
-	//fmt.Println(sendMailRequest)
-
-	// Domain processing and making API call to MailGrid
-	//url := config.GlobalConfig.SendGrid.APIHost + config.GlobalConfig.SendGrid.APIEndpoint
-	//contentType := constants.CONTENT_TYPE
-	//receiverName := "gagan"
-	//receiverEmail := "9592951585g@gmail.com"
-
-	//GridMailRequest := requests.GetSendGridRequestBody(sendMailRequest.Name,
-	//	receiverName,
-	//	sendMailRequest.Email,
-	//	receiverEmail,
-	//	config.GlobalConfig.SendGrid.APIKey,
-	//	constants.CONTENT_TYPE,
-	//	sendMailRequest.Message,
-	//)
-	//req, err := json.Marshal(GridMailRequest)
-	//bodyReader := bytes.NewReader(req)
-	//fmt.Println("url:" + url)
-	//response, err := http.Post(url, contentType, bodyReader)
-	//if err != nil {
-	//	fmt.Println("here2")
-	//	fmt.Fprintf(w, err.Error())
-	//	return
-	//}
-	//if response.StatusCode != 200 || response.StatusCode != 201 {
-	//	fmt.Println("here3")
-	//	fmt.Println(response.Status)
-	//	fmt.Fprintf(w, response.Status)
-	//	return
-	//}
-	// Response processing
-	handlerResp = responses.SendMailResponse{
-		Message: "Success! We will get back to you soon :)",
-		Error:   "",
+	err = writeRequest.Validate()
+	if err != nil {
+		resp := responses.WriteResponse{
+			Error:   constants.BadRequest,
+			Message: constants.BadRequest,
+		}
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 	}
-	WriteResponse(w, http.StatusAccepted, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+	resp := services.WriteService(writeRequest, username)
+	switch resp.Error {
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
+	}
 }
 
 func CorsHandler(w http.ResponseWriter, r *http.Request) {

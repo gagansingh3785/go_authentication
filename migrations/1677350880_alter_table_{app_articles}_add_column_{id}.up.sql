@@ -1,0 +1,1 @@
+ALTER TABLE app_articles ADD COLUMN id INTEGER NOT NULL DEFAULT NEXTVAL('next_article_id_val');

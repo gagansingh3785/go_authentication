@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gagansingh3785/go_authentication/config"
 	"github.com/gagansingh3785/go_authentication/constants"
+	"github.com/gagansingh3785/go_authentication/cronjobs"
 	"github.com/gagansingh3785/go_authentication/database"
 	"github.com/gagansingh3785/go_authentication/server"
 	_ "github.com/lib/pq" // this import is required to fetch the complete implementation of postgres driver for sql.Open()
@@ -11,6 +12,10 @@ import (
 	"net/http"
 	"os"
 )
+
+func startCronJobs() {
+	go cronjobs.ClearOldSessionJob()
+}
 
 func setupAuthentication() error {
 	defer database.DBConn.Close()
@@ -29,6 +34,9 @@ func setupAuthentication() error {
 		panic(err)
 	}
 	fmt.Println("successfully created the database connection")
+
+	//starting cron jobs here
+	startCronJobs()
 
 	//Router: This returns a gorilla/mux router which takes paths and routes them to handlers
 	r := server.CreateNewRouter()
