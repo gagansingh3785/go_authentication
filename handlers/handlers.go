@@ -211,7 +211,7 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 			Name:  key,
 			Value: value,
 		}
-		http.SetCookie(w, cookie)
+		w.Header().Add(cookie.Name, cookie.Value)
 	}
 	// This method can only be called once per request
 	w.WriteHeader(status)
