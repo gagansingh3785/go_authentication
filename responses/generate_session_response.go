@@ -31,5 +31,6 @@ func (resp *GenerateSessionResponse) AddSessionCookie(username, sessionID string
 		resp.Cookies = make(map[string]string)
 	}
 	sessionCookie := getSessionCookie(username, sessionID)
+	resp.AddHeader(constants.SESSION_COOKIE, sessionCookie)
 	resp.AddCookie(constants.SESSION_COOKIE, sessionCookie)
 }
