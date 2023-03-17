@@ -228,4 +228,5 @@ func addCORSHeaders(headers map[string]string) {
 	headers["Access-Control-Allow-Origin"] = "*"
 	headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
 	headers["Access-Control-Allow-Headers"] = "Accept, Content-Type, Content-Length, Authorization"
+	headers["Access-Control-Expose-Headers"] = "*"
 }
