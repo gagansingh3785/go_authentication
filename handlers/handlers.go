@@ -7,6 +7,7 @@ import (
 	"github.com/gagansingh3785/go_authentication/requests"
 	"github.com/gagansingh3785/go_authentication/responses"
 	"github.com/gagansingh3785/go_authentication/services"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -175,6 +176,7 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 			Message: constants.BadRequest,
 		}
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
 	}
 	err = writeRequest.Validate()
 	if err != nil {
@@ -183,6 +185,7 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 			Message: constants.BadRequest,
 		}
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
 	}
 	resp := services.WriteService(writeRequest, username)
 	switch resp.Error {
@@ -190,6 +193,30 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	default:
 		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
+	}
+}
+
+func GetDetail(w http.ResponseWriter, r *http.Request) {
+	detailRequest := requests.GetDetailRequest{}
+	vars := mux.Vars(r)
+	detailRequest.ArticleUUID = vars["articleID"]
+	err := detailRequest.Validate()
+	if err != nil {
+		resp := responses.GetDetailResponse{
+			Error:   err.Error(),
+			Message: err.Error(),
+		}
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	resp := services.GetDetailService(detailRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
 	}
 }
 

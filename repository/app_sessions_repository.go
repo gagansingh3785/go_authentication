@@ -17,7 +17,7 @@ const createSessionQuery = "INSERT INTO " + constants.SESSIONS_TABLE + " (user_i
 const findByUserIDSessionQuery = "SELECT user_id, session_id FROM " + constants.SESSIONS_TABLE + "  WHERE user_id = $1"
 const deleteSessionByUserIDQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE user_id = $1"
 const deleteSessionBySessionIDQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE session_id = $1"
-const clearOldSessionsQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE $1 - created_time > '0 days 00:01:00'"
+const clearOldSessionsQuery = "DELETE FROM " + constants.SESSIONS_TABLE + " WHERE $1 - created_time > '1 days 00:00:00'"
 
 func CreateSession(userID, sessionID string) (domain.Session, error) {
 	session := domain.Session{}

@@ -11,6 +11,7 @@ import (
 const createArticleWithUsernameQuery = "INSERT INTO " + constants.ARTICLE_TABLE +
 	" (author, title, article_text) VALUES ($1, $2, $3) RETURNING article_id"
 const getCurrentPageArticlesQuery = "SELECT article_id, title, article_text, author, reads, id FROM " + constants.ARTICLE_TABLE + " WHERE id > $1 and id <= $2"
+const getArticleDetailQuery = "SELECT article_id, author, title, article_text, reads FROM " + constants.ARTICLE_TABLE + " WHERE article_id=$1"
 
 func CreateNewArticle(username, title, text string) (string, error) {
 	row := database.DBConn.QueryRow(createArticleWithUsernameQuery, username, title, text)
@@ -25,7 +26,7 @@ func CreateNewArticle(username, title, text string) (string, error) {
 }
 
 func GetCurrentPageArticles(currentPage int64) ([]domain.Article, error) {
-	articles := make([]domain.Article, 10)
+	articles := make([]domain.Article, constants.PAGE_SIZE)
 	lowBoundID := (currentPage - 1) * constants.PAGE_SIZE
 	highBoundID := currentPage * constants.PAGE_SIZE
 	rows, err := database.DBConn.Query(getCurrentPageArticlesQuery, lowBoundID, highBoundID)
@@ -43,4 +44,15 @@ func GetCurrentPageArticles(currentPage int64) ([]domain.Article, error) {
 		articles = append(articles, article)
 	}
 	return articles, nil
+}
+
+func GetArticleDetail(articleID string) (domain.Article, error) {
+	article := domain.Article{}
+	row := database.DBConn.QueryRow(getArticleDetailQuery, articleID)
+	if err := row.Scan(&article.UUID, &article.Author, &article.Title, &article.Text, &article.Reads); err != nil {
+		if err == sql.ErrNoRows {
+			return article, constants.ErrSQLNoRows
+		}
+	}
+	return article, nil
 }

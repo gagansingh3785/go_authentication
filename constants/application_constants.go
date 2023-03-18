@@ -13,7 +13,7 @@ const (
 	ARTICLE_TABLE  = "app_articles"
 
 	//Request Headers
-	SESSION_COOKIE     = "X-Session-ID"
+	SESSION_COOKIE     = "X-Session-Id"
 	CONTENT_TYPE_KEY   = "Content-Type"
 	CONTENT_TYPE_VALUE = "application/json"
 

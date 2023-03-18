@@ -9,7 +9,7 @@ const (
 	SessionExpired      = "Sorry you session expired, please login again"
 	UsernameTaken       = "This username is already taken, please try with a different username"
 	EmailAlreadyTaken   = "This email is already taken, please try with a different email"
-	BadRequest          = "Please provide all the fields"
+	BadRequest          = "please provide all the fields"
 	ArticlePageNotFound = "The given page number is invalid"
 )
 
