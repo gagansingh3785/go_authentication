@@ -7,10 +7,8 @@ import (
 	"github.com/gagansingh3785/go_authentication/responses"
 )
 
-func HomeService(homeRequest requests.HomeRequest, username, sessionID string) responses.HomeResponse {
-	resp := responses.HomeResponse{}
-	resp.Headers = make(map[string]string)
-	resp.Cookies = make(map[string]string)
+func HomeService(homeRequest requests.HomeRequest) responses.HomeResponse {
+	resp := responses.NewHomeResponse()
 	pageNumber := homeRequest.PageNumber
 	articles, err := repository.GetCurrentPageArticles(pageNumber)
 	if err != nil {

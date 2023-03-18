@@ -10,7 +10,12 @@ func (resp *CORSResponse) AddHeader(key, value string) {
 }
 
 func (resp *CORSResponse) AddAllHeaders() {
-	if resp.Headers == nil {
-		resp.Headers = make(map[string]string)
-	}
+
+}
+
+func NewCORSResponse() CORSResponse {
+	resp := CORSResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
 }

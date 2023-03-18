@@ -16,7 +16,7 @@ func registerRoutes(router *mux.Router) {
 	//General Routes
 	router.Methods("Post").Path("/register").HandlerFunc(handlers.Register)
 	router.Methods("Post").Path("/login").HandlerFunc(handlers.Login)
-	router.Methods("Get").Path("/home").HandlerFunc(middleware.AuthoriseSession(handlers.Home))
+	router.Methods("Get").Path("/home").HandlerFunc(handlers.Home)
 	router.Methods("Options").HandlerFunc(handlers.CorsHandler)
 	router.Methods("Post").Path("/generate_session").HandlerFunc(handlers.GenerateSessionHandler)
 	router.Methods("Post").Path("/logout").HandlerFunc(middleware.AuthoriseSession(handlers.Logout))

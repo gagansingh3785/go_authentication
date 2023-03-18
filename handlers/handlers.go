@@ -9,30 +9,30 @@ import (
 	"github.com/gagansingh3785/go_authentication/services"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 )
 
-func Home(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
-	fmt.Println("Home page called with sessionCookie: ", sessionKey)
+func Home(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Home page called with requestPayload: %+v\n", r)
 	homeRequest := requests.HomeRequest{}
-	err := json.NewDecoder(r.Body).Decode(&homeRequest)
+	pageNumber, err := strconv.Atoi(r.URL.Query().Get("pageNumber"))
 	if err != nil {
-		resp := responses.HomeResponse{
-			Error:   constants.BadRequest,
-			Message: constants.BadRequest,
-		}
+		resp := responses.NewHomeResponse()
+		resp.Error = constants.BadRequest
+		resp.Message = constants.BadRequest
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 		return
 	}
+	homeRequest.PageNumber = pageNumber
 	err = homeRequest.Validate()
 	if err != nil {
-		resp := responses.HomeResponse{
-			Error:   constants.BadRequest,
-			Message: constants.BadRequest,
-		}
+		resp := responses.NewHomeResponse()
+		resp.Error = constants.BadRequest
+		resp.Message = constants.BadRequest
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 		return
 	}
-	resp := services.HomeService(homeRequest, username, sessionKey)
+	resp := services.HomeService(homeRequest)
 	switch resp.Error {
 	case constants.ArticlePageNotFound:
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
@@ -49,22 +49,20 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&registerRequest)
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
-		handlerResp := responses.RegisterResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		registerResponse := responses.NewRegisterResponse()
+		registerResponse.Error = constants.BadRequest
+		registerResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, registerResponse, registerResponse.Headers, registerResponse.Cookies)
 	}
 
 	err = registerRequest.Validate()
 
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
-		handlerResp := responses.RegisterResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		registerResponse := responses.NewRegisterResponse()
+		registerResponse.Error = constants.BadRequest
+		registerResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, registerResponse, registerResponse.Headers, registerResponse.Cookies)
 	}
 
 	resp := services.RegisterService(registerRequest)
@@ -84,22 +82,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
-		handlerResp := responses.LoginResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		loginResponse := responses.NewLoginResponse()
+		loginResponse.Error = constants.BadRequest
+		loginResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, loginResponse, loginResponse.Headers, loginResponse.Cookies)
 		return
 	}
 	fmt.Printf("\n %+v \n", loginRequest)
 	err = loginRequest.Validate()
 	if err != nil {
 		fmt.Println("Error while unmarshalling: ", err.Error())
-		handlerResp := responses.LoginResponse{
-			Message: "",
-			Error:   "Please provide all the required fields",
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		loginResponse := responses.NewLoginResponse()
+		loginResponse.Error = constants.BadRequest
+		loginResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, loginResponse, loginResponse.Headers, loginResponse.Cookies)
 		return
 	}
 	resp := services.LoginService(loginRequest)
@@ -121,21 +117,23 @@ func GenerateSessionHandler(w http.ResponseWriter, r *http.Request) {
 	generateSessionRequest := requests.GenerateSessionRequest{}
 	err := json.NewDecoder(r.Body).Decode(&generateSessionRequest)
 	if err != nil {
-		handlerResp := responses.LoginResponse{
-			Message: constants.BadRequest,
-			Error:   constants.BadRequest,
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		generateSessionResponse := responses.NewGenerateSessionResponse()
+		generateSessionResponse.Error = constants.BadRequest
+		generateSessionResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, generateSessionResponse,
+			generateSessionResponse.Headers,
+			generateSessionResponse.Cookies)
 		return
 	}
 	fmt.Printf("\n %+v \n", generateSessionRequest)
 	err = generateSessionRequest.Validate()
 	if err != nil {
-		handlerResp := responses.LoginResponse{
-			Message: constants.BadRequest,
-			Error:   constants.BadRequest,
-		}
-		WriteResponse(w, http.StatusBadRequest, handlerResp, handlerResp.Headers, handlerResp.Cookies)
+		generateSessionResponse := responses.NewGenerateSessionResponse()
+		generateSessionResponse.Error = constants.BadRequest
+		generateSessionResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, generateSessionResponse,
+			generateSessionResponse.Headers,
+			generateSessionResponse.Cookies)
 		return
 	}
 	resp := services.GenerateSessionService(generateSessionRequest)
@@ -172,20 +170,18 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 	err := json.NewDecoder(r.Body).Decode(&writeRequest)
 	fmt.Printf("%+v \n", writeRequest)
 	if err != nil {
-		resp := responses.WriteResponse{
-			Error:   constants.BadRequest,
-			Message: constants.BadRequest,
-		}
-		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		writeResponse := responses.NewWriteResponse()
+		writeResponse.Error = constants.BadRequest
+		writeResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, writeResponse, writeResponse.Headers, writeResponse.Cookies)
 		return
 	}
 	err = writeRequest.Validate()
 	if err != nil {
-		resp := responses.WriteResponse{
-			Error:   constants.BadRequest,
-			Message: constants.BadRequest,
-		}
-		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		writeResponse := responses.NewWriteResponse()
+		writeResponse.Error = constants.BadRequest
+		writeResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, writeResponse, writeResponse.Headers, writeResponse.Cookies)
 		return
 	}
 	resp := services.WriteService(writeRequest, username)
@@ -204,11 +200,10 @@ func GetDetail(w http.ResponseWriter, r *http.Request) {
 	detailRequest.ArticleUUID = vars["articleID"]
 	err := detailRequest.Validate()
 	if err != nil {
-		resp := responses.GetDetailResponse{
-			Error:   err.Error(),
-			Message: err.Error(),
-		}
-		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		getDetailResponse := responses.NewGetDetailResponse()
+		getDetailResponse.Error = constants.BadRequest
+		getDetailResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, getDetailResponse, getDetailResponse.Headers, getDetailResponse.Cookies)
 		return
 	}
 	resp := services.GetDetailService(detailRequest)
@@ -223,7 +218,7 @@ func GetDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func CorsHandler(w http.ResponseWriter, r *http.Request) {
-	corsResponse := responses.CORSResponse{}
+	corsResponse := responses.NewCORSResponse()
 	corsResponse.AddAllHeaders()
 	WriteResponse(w, 200, corsResponse, corsResponse.Headers, corsResponse.Cookies)
 }

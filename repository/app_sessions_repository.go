@@ -71,10 +71,11 @@ func DeleteSessionBySessionID(sessionID string) error {
 }
 
 func ClearOldSessions(currentTime time.Time) error {
-	_, err := database.DBConn.Query(clearOldSessionsQuery, currentTime)
+	rows, err := database.DBConn.Query(clearOldSessionsQuery, currentTime)
 	if err != nil {
 		fmt.Println("ClearSessionQuery: ", err.Error())
 		return err
 	}
+	defer rows.Close()
 	return nil
 }

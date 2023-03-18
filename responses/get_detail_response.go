@@ -13,6 +13,13 @@ type GetDetailResponse struct {
 	Message string            `json:"-"`
 }
 
+func NewGetDetailResponse() GetDetailResponse {
+	resp := GetDetailResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
+}
+
 func (resp *GetDetailResponse) AddHeader(key, value string) {
 	resp.Headers[key] = value
 }
