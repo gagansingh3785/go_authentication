@@ -11,13 +11,17 @@ type LoginResponse struct {
 	Error        string            `json:"error"`
 }
 
+func NewLoginResponse() LoginResponse {
+	resp := LoginResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
+}
+
 func (resp *LoginResponse) AddHeader(key, value string) {
 	resp.Headers[key] = value
 }
 
 func (resp *LoginResponse) AddAllHeaders() {
-	if resp.Headers == nil {
-		resp.Headers = make(map[string]string)
-	}
 	resp.AddHeader(constants.CONTENT_TYPE_KEY, constants.CONTENT_TYPE_VALUE)
 }

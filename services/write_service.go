@@ -8,9 +8,7 @@ import (
 )
 
 func WriteService(req requests.WriteRequest, username string) responses.WriteResponse {
-	resp := responses.WriteResponse{}
-	resp.Headers = make(map[string]string)
-	resp.Cookies = make(map[string]string)
+	resp := responses.NewWriteResponse()
 	articleID, err := repository.CreateNewArticle(username, req.Title, req.Text)
 	if err != nil || articleID == "" {
 		resp.Error = constants.InternalServerError

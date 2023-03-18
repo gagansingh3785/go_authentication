@@ -6,3 +6,10 @@ type WriteResponse struct {
 	Error   string            `json:"-"`
 	Message string            `json:"-"`
 }
+
+func NewWriteResponse() WriteResponse {
+	resp := WriteResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
+}

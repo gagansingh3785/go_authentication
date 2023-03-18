@@ -8,9 +8,7 @@ import (
 )
 
 func GetDetailService(req requests.GetDetailRequest) responses.GetDetailResponse {
-	resp := responses.GetDetailResponse{}
-	resp.Headers = make(map[string]string)
-	resp.Cookies = make(map[string]string)
+	resp := responses.NewGetDetailResponse()
 	article, err := repository.GetArticleDetail(req.ArticleUUID)
 	switch err {
 	case constants.ErrSQLNoRows:

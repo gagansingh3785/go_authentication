@@ -14,6 +14,13 @@ type HomeResponse struct {
 	Error    string            `json:"error"`
 }
 
+func NewHomeResponse() HomeResponse {
+	resp := HomeResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
+}
+
 func (resp *HomeResponse) AddHeader(key, value string) {
 	resp.Headers[key] = value
 }
@@ -23,8 +30,5 @@ func (resp *HomeResponse) AddCookie(key, value string) {
 }
 
 func (resp *HomeResponse) AddAllHeaders() {
-	if resp.Headers == nil {
-		resp.Headers = make(map[string]string)
-	}
 	resp.AddHeader(constants.CONTENT_TYPE_KEY, constants.CONTENT_TYPE_VALUE)
 }

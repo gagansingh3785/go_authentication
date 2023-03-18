@@ -11,6 +11,13 @@ type GenerateSessionResponse struct {
 	Error   string            `json:"error"`
 }
 
+func NewGenerateSessionResponse() GenerateSessionResponse {
+	resp := GenerateSessionResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
+	return resp
+}
+
 func (resp *GenerateSessionResponse) AddHeader(key, value string) {
 	resp.Headers[key] = value
 }
@@ -20,16 +27,10 @@ func (resp *GenerateSessionResponse) AddCookie(key, value string) {
 }
 
 func (resp *GenerateSessionResponse) AddAllHeaders() {
-	if resp.Headers == nil {
-		resp.Headers = make(map[string]string)
-	}
 	resp.AddHeader(constants.CONTENT_TYPE_KEY, constants.CONTENT_TYPE_VALUE)
 }
 
 func (resp *GenerateSessionResponse) AddSessionCookie(username, sessionID string) {
-	if resp.Cookies == nil {
-		resp.Cookies = make(map[string]string)
-	}
 	sessionCookie := getSessionCookie(username, sessionID)
 	resp.AddHeader(constants.SESSION_COOKIE, sessionCookie)
 }

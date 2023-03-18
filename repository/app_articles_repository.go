@@ -25,8 +25,8 @@ func CreateNewArticle(username, title, text string) (string, error) {
 	return articleID, nil
 }
 
-func GetCurrentPageArticles(currentPage int64) ([]domain.Article, error) {
-	articles := make([]domain.Article, constants.PAGE_SIZE)
+func GetCurrentPageArticles(currentPage int) ([]domain.Article, error) {
+	var articles []domain.Article
 	lowBoundID := (currentPage - 1) * constants.PAGE_SIZE
 	highBoundID := currentPage * constants.PAGE_SIZE
 	rows, err := database.DBConn.Query(getCurrentPageArticlesQuery, lowBoundID, highBoundID)
