@@ -170,6 +170,7 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 	fmt.Printf("Write Handler Called username=%s sessionID=%s\n", username, sessionKey)
 	writeRequest := requests.WriteRequest{}
 	err := json.NewDecoder(r.Body).Decode(&writeRequest)
+	fmt.Printf("%+v \n", writeRequest)
 	if err != nil {
 		resp := responses.WriteResponse{
 			Error:   constants.BadRequest,
@@ -188,6 +189,7 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 		return
 	}
 	resp := services.WriteService(writeRequest, username)
+	addCORSHeaders(resp.Headers)
 	switch resp.Error {
 	case constants.InternalServerError:
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
@@ -230,16 +232,10 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 	//Setting Response Headers
 	addCORSHeaders(headers)
 	for key, value := range headers {
-		w.Header().Add(key, value)
+		w.Header().Set(key, value)
 	}
-	//Setting Response Cookies
-	for key, value := range cookies {
-		cookie := &http.Cookie{
-			Name:  key,
-			Value: value,
-		}
-		w.Header().Add(cookie.Name, cookie.Value)
-	}
+	fmt.Printf("%+v \n", headers)
+	fmt.Printf("%+v \n", w.Header())
 	// This method can only be called once per request
 	w.WriteHeader(status)
 	err := json.NewEncoder(w).Encode(response)
@@ -249,10 +245,8 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 }
 
 func addCORSHeaders(headers map[string]string) {
-	if headers == nil {
-		headers = make(map[string]string)
-	}
-	headers["Access-Control-Allow-Origin"] = "*"
+	fmt.Println("here")
+	headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
 	headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
 	headers["Access-Control-Allow-Headers"] = "Accept, Content-Type, Content-Length, Authorization"
 	headers["Access-Control-Expose-Headers"] = "*"

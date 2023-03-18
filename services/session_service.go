@@ -10,7 +10,8 @@ import (
 
 func GenerateSessionService(req requests.GenerateSessionRequest) responses.GenerateSessionResponse {
 	resp := responses.GenerateSessionResponse{}
-
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
 	username := req.Username
 	passwordHash := req.PasswordHash
 	user, err := repository.GetUserByEmailOrUsername(username)

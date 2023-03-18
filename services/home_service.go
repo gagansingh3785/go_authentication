@@ -9,6 +9,8 @@ import (
 
 func HomeService(homeRequest requests.HomeRequest, username, sessionID string) responses.HomeResponse {
 	resp := responses.HomeResponse{}
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
 	pageNumber := homeRequest.PageNumber
 	articles, err := repository.GetCurrentPageArticles(pageNumber)
 	if err != nil {

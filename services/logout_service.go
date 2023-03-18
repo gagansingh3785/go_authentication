@@ -8,7 +8,8 @@ import (
 
 func LogoutService(sessionKey string) responses.LogoutResponse {
 	resp := responses.LogoutResponse{}
-
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
 	err := repository.DeleteSessionBySessionID(sessionKey)
 	if err != nil {
 		resp.Error = constants.InternalServerError

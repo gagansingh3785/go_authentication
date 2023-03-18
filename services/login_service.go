@@ -10,7 +10,8 @@ import (
 
 func LoginService(req requests.LoginRequest) responses.LoginResponse {
 	resp := responses.LoginResponse{}
-
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
 	username := req.Username
 	user, err := repository.GetUserByEmailOrUsername(username)
 	fmt.Printf("\n %+v \n", user)

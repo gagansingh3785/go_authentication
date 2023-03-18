@@ -9,7 +9,8 @@ import (
 
 func RegisterService(registerRequest requests.RegisterRequest) responses.RegisterResponse {
 	resp := responses.RegisterResponse{}
-
+	resp.Headers = make(map[string]string)
+	resp.Cookies = make(map[string]string)
 	username := registerRequest.Username
 	salt := registerRequest.Salt
 	phone := registerRequest.Phone
