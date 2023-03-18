@@ -205,7 +205,6 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 	for key, value := range headers {
 		w.Header().Add(key, value)
 	}
-	w.Header().Add("X-Session-ID", "SOMETHING")
 	//Setting Response Cookies
 	for key, value := range cookies {
 		cookie := &http.Cookie{
