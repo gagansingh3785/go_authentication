@@ -11,6 +11,7 @@ func HomeService(homeRequest requests.HomeRequest) responses.HomeResponse {
 	resp := responses.NewHomeResponse()
 	pageNumber := homeRequest.PageNumber
 	articles, err := repository.GetCurrentPageArticles(pageNumber)
+
 	if err != nil {
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError

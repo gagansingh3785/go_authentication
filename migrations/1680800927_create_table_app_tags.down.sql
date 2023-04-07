@@ -1,0 +1,2 @@
+DELETE FROM app_tags;
+DROP TABLE IF EXISTS app_tags;

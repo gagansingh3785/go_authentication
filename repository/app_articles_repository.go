@@ -6,15 +6,20 @@ import (
 	"github.com/gagansingh3785/go_authentication/constants"
 	"github.com/gagansingh3785/go_authentication/database"
 	"github.com/gagansingh3785/go_authentication/domain"
+	"github.com/lib/pq"
 )
 
 const createArticleWithUsernameQuery = "INSERT INTO " + constants.ARTICLE_TABLE +
-	" (author, title, article_text) VALUES ($1, $2, $3) RETURNING article_id"
-const getCurrentPageArticlesQuery = "SELECT article_id, title, article_text, author, reads, id FROM " + constants.ARTICLE_TABLE + " WHERE id > $1 and id <= $2"
+	" (author, title, article_text, tags) VALUES ($1, $2, $3, $4) RETURNING article_id"
+const getCurrentPageArticlesQuery = "SELECT article_id, title, article_text, author, reads, id, tags FROM " + constants.ARTICLE_TABLE + " WHERE id > $1 and id <= $2"
 const getArticleDetailQuery = "SELECT article_id, author, title, article_text, reads FROM " + constants.ARTICLE_TABLE + " WHERE article_id=$1"
 
-func CreateNewArticle(username, title, text string) (string, error) {
-	row := database.DBConn.QueryRow(createArticleWithUsernameQuery, username, title, text)
+func CreateNewArticle(username, title, text string, tags []domain.Tag) (string, error) {
+	var tagNames []string
+	for _, tag := range tags {
+		tagNames = append(tagNames, tag.Name)
+	}
+	row := database.DBConn.QueryRow(createArticleWithUsernameQuery, username, title, text, pq.Array(tagNames))
 	var articleID string
 	if err := row.Scan(&articleID); err != nil {
 		if err == sql.ErrNoRows {
@@ -37,7 +42,7 @@ func GetCurrentPageArticles(currentPage int) ([]domain.Article, error) {
 	defer rows.Close()
 	for rows.Next() {
 		article := domain.Article{}
-		err = rows.Scan(&article.UUID, &article.Title, &article.Text, &article.Author, &article.Reads, &article.ID)
+		err = rows.Scan(&article.UUID, &article.Title, &article.Text, &article.Author, &article.Reads, &article.ID, pq.Array(&article.Tags))
 		if err != nil {
 			return articles, err
 		}

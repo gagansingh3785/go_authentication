@@ -12,6 +12,6 @@ func ClearOldSessionJob() {
 	if err != nil {
 		fmt.Println("Clear Session Cron Job Failure: ", err.Error())
 	}
-	time.Sleep(20 * time.Second)
+	time.Sleep(20000 * time.Second)
 	ClearOldSessionJob()
 }

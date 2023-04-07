@@ -8,9 +8,11 @@ const (
 	AUTHENTICATION_HOST = ""
 
 	//database table constants
-	USER_TABLE     = "app_user"
-	SESSIONS_TABLE = "app_sessions"
-	ARTICLE_TABLE  = "app_articles"
+	USER_TABLE      = "app_user"
+	SESSIONS_TABLE  = "app_sessions"
+	ARTICLE_TABLE   = "app_articles"
+	TAGS_TABLE      = "app_tags"
+	ARTICLES_X_TAGS = "app_articles_app_tags"
 
 	//Request Headers
 	SESSION_COOKIE     = "X-Session-Id"

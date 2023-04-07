@@ -185,8 +185,9 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 		return
 	}
 	resp := services.WriteService(writeRequest, username)
-	addCORSHeaders(resp.Headers)
 	switch resp.Error {
+	case constants.InvalidTags:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 	case constants.InternalServerError:
 		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
 	default:

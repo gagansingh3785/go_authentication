@@ -1,1 +1,1 @@
-ALTER TABLE app_sessions DROP COLUMN created_time IF EXISTS;
+ALTER TABLE app_sessions DROP COLUMN IF EXISTS created_time;
