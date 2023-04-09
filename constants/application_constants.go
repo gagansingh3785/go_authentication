@@ -14,6 +14,7 @@ const (
 	TAGS_TABLE      = "app_tags"
 	ARTICLES_X_TAGS = "app_articles_app_tags"
 	COMMENTS_TABLE  = "app_comments"
+	LIKES_TABLE     = "app_likes"
 
 	//Request Headers
 	SESSION_COOKIE     = "X-Session-Id"

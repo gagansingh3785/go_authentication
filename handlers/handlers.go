@@ -219,10 +219,88 @@ func GetDetail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func PostArticleComment(w http.ResponseWriter, r *http.Request, sessionKey, Username string) {
-	fmt.Printf("post article comment handler called with sessionKey=%s and username=%s \n", sessionKey, Username)
+func LikeArticle(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Printf("Like an article handler is called with session key=%s and username=%s \n", sessionKey, username)
+	likeArticleRequest := requests.LikeArticleRequest{}
+	likeArticleRequest.Username = username
+	vars := mux.Vars(r)
+	articleID := vars["articleID"]
+	likeArticleRequest.ArticleID = articleID
+	err := likeArticleRequest.Validate()
+	if err != nil {
+		resp := responses.NewLikeArticleResponse()
+		resp.Error = err.Error()
+		resp.Message = err.Error()
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	resp := services.LikeArticleService(likeArticleRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
+	}
+}
+
+func IsLikedArticle(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Printf("isliked handler called with session key=%s and username=%s \n", sessionKey, username)
+	isLikedArticleRequest := requests.IsLikedRequest{}
+	isLikedArticleRequest.Username = username
+	vars := mux.Vars(r)
+	articleID := vars["articleID"]
+	isLikedArticleRequest.ArticleID = articleID
+	err := isLikedArticleRequest.Validate()
+	if err != nil {
+		resp := responses.NewIsLikedResponse()
+		resp.Error = err.Error()
+		resp.Message = err.Error()
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	resp := services.IsLikedArticleService(isLikedArticleRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
+	}
+}
+
+func UnlikeArticle(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Printf("Unlike handler called with session key=%s and username=%s \n", sessionKey, username)
+	unlikeArticleRequest := requests.UnlikeArticleRequest{}
+	unlikeArticleRequest.Username = username
+	vars := mux.Vars(r)
+	articleID := vars["articleID"]
+	unlikeArticleRequest.ArticleID = articleID
+	err := unlikeArticleRequest.Validate()
+	if err != nil {
+		resp := responses.NewUnlikeArticleResponse()
+		resp.Error = err.Error()
+		resp.Message = err.Error()
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	resp := services.UnlikeArticleService(unlikeArticleRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
+	}
+}
+
+func PostArticleComment(w http.ResponseWriter, r *http.Request, sessionKey, username string) {
+	fmt.Printf("post article comment handler called with sessionKey=%s and username=%s \n", sessionKey, username)
 	postArticleCommentRequest := requests.PostArticleCommentRequest{}
-	postArticleCommentRequest.Username = Username
+	postArticleCommentRequest.Username = username
 	vars := mux.Vars(r)
 	articleID := vars["articleID"]
 	postArticleCommentRequest.ArticleUUID = articleID

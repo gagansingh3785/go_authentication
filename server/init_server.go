@@ -24,4 +24,7 @@ func registerRoutes(router *mux.Router) {
 	router.Methods("Get").Path("/detail/{articleID}").HandlerFunc(handlers.GetDetail)
 	router.Methods("Get").Path("/detail/{articleID}/comments").HandlerFunc(handlers.GetArticleComments)
 	router.Methods("Post").Path("/{articleID}/comment").HandlerFunc(middleware.AuthoriseSession(handlers.PostArticleComment))
+	router.Methods("Post").Path("/{articleID}/like").HandlerFunc(middleware.AuthoriseSession(handlers.LikeArticle))
+	router.Methods("Post").Path("/{articleID}/unlike").HandlerFunc(middleware.AuthoriseSession(handlers.UnlikeArticle))
+	router.Methods("Get").Path("/{articleID}/is_liked").HandlerFunc(middleware.AuthoriseSession(handlers.IsLikedArticle))
 }
