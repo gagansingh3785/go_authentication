@@ -9,7 +9,7 @@ import (
 
 const (
 	createArticleCommentQuery             = "INSERT INTO " + constants.COMMENTS_TABLE + " (username, article_id, content) VALUES ($1, $2, $3) RETURNING username, article_id, comment_id, content, creation_time"
-	getArticleCommentFromArticleUUIDQuery = "SELECT username, article_id, comment_id, content, creation_time from " + constants.COMMENTS_TABLE + " WHERE article_id=$1"
+	getArticleCommentFromArticleUUIDQuery = "SELECT username, article_id, comment_id, content, creation_time from " + constants.COMMENTS_TABLE + " WHERE article_id=$1 order by creation_time"
 )
 
 func CreateNewComment(username, articleID, content string) (domain.Comment, error) {
