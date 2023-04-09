@@ -168,7 +168,6 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 	fmt.Printf("Write Handler Called username=%s sessionID=%s\n", username, sessionKey)
 	writeRequest := requests.WriteRequest{}
 	err := json.NewDecoder(r.Body).Decode(&writeRequest)
-	fmt.Printf("%+v \n", writeRequest)
 	if err != nil {
 		writeResponse := responses.NewWriteResponse()
 		writeResponse.Error = constants.BadRequest
@@ -196,9 +195,11 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 }
 
 func GetDetail(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get Detail route called")
 	detailRequest := requests.GetDetailRequest{}
 	vars := mux.Vars(r)
 	detailRequest.ArticleUUID = vars["articleID"]
+	fmt.Println("Get Detail Article UUID: ", detailRequest.ArticleUUID)
 	err := detailRequest.Validate()
 	if err != nil {
 		getDetailResponse := responses.NewGetDetailResponse()
@@ -230,8 +231,6 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 	for key, value := range headers {
 		w.Header().Set(key, value)
 	}
-	fmt.Printf("%+v \n", headers)
-	fmt.Printf("%+v \n", w.Header())
 	// This method can only be called once per request
 	w.WriteHeader(status)
 	err := json.NewEncoder(w).Encode(response)
@@ -241,7 +240,6 @@ func WriteResponse(w http.ResponseWriter, status int, response any, headers, coo
 }
 
 func addCORSHeaders(headers map[string]string) {
-	fmt.Println("here")
 	headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
 	headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
 	headers["Access-Control-Allow-Headers"] = "Accept, Content-Type, Content-Length, Authorization"

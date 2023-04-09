@@ -13,6 +13,7 @@ const createArticleWithUsernameQuery = "INSERT INTO " + constants.ARTICLE_TABLE 
 	" (author, title, article_text, tags) VALUES ($1, $2, $3, $4) RETURNING article_id"
 const getCurrentPageArticlesQuery = "SELECT article_id, title, article_text, author, reads, id, tags FROM " + constants.ARTICLE_TABLE + " WHERE id > $1 and id <= $2"
 const getArticleDetailQuery = "SELECT article_id, author, title, article_text, reads FROM " + constants.ARTICLE_TABLE + " WHERE article_id=$1"
+const updateArticleCountQuery = "UPDATE " + constants.ARTICLE_TABLE + " SET reads = reads + 1 WHERE article_id=$1 RETURNING reads"
 
 func CreateNewArticle(username, title, text string, tags []domain.Tag) (string, error) {
 	var tagNames []string
@@ -58,6 +59,19 @@ func GetArticleDetail(articleID string) (domain.Article, error) {
 		if err == sql.ErrNoRows {
 			return article, constants.ErrSQLNoRows
 		}
+		return article, err
 	}
 	return article, nil
+}
+
+func UpdateArticleCount(articleID string) (int64, error) {
+	var count int64
+	row := database.DBConn.QueryRow(updateArticleCountQuery, articleID)
+	if err := row.Scan(&count); err != nil {
+		if err == sql.ErrNoRows {
+			return count, constants.ErrSQLNoRows
+		}
+		return count, err
+	}
+	return count, nil
 }

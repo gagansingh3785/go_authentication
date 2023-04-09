@@ -15,7 +15,13 @@ func GetDetailService(req requests.GetDetailRequest) responses.GetDetailResponse
 		resp.Error = constants.BadRequest
 		resp.Message = constants.BadRequest
 	case nil:
-		resp.Article = article
+		_, err := repository.UpdateArticleCount(article.UUID)
+		if err != nil {
+			resp.Error = constants.InternalServerError
+			resp.Message = constants.InternalServerError
+		} else {
+			resp.Article = article
+		}
 	default:
 		resp.Error = constants.InternalServerError
 		resp.Message = constants.InternalServerError
