@@ -12,13 +12,15 @@ const (
 	BadRequest          = "please provide all the fields"
 	ArticlePageNotFound = "The given page number is invalid"
 	InvalidTags         = "The provided tags are invalid"
+	InvalidArticleID    = "The given article id is invalid"
 )
 
 var (
 	//SQL errors
-	ErrSQLNoRows        = errors.Errorf("%s", "Error no result for query")
-	ErrEmptyTags        = errors.Errorf("%s", "No tag present in request")
-	ErrExcessiveTags    = errors.Errorf("%s", "More than 3 tags supplied")
-	ErrEmptyTitle       = errors.Errorf("%s", "No title provided")
-	ErrEmptyArticleBody = errors.Errorf("%s", "Empty body for article")
+	ErrSQLNoRows           = errors.Errorf("%s", "Error no result for query")
+	ErrEmptyTags           = errors.Errorf("%s", "No tag present in request")
+	ErrExcessiveTags       = errors.Errorf("%s", "More than 3 tags supplied")
+	ErrEmptyTitle          = errors.Errorf("%s", "No title provided")
+	ErrEmptyArticleBody    = errors.Errorf("%s", "Empty body for article")
+	ErrEmptyCommentContent = errors.Errorf("%s", "The comment cannot be empty")
 )

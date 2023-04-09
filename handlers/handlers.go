@@ -219,6 +219,63 @@ func GetDetail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func PostArticleComment(w http.ResponseWriter, r *http.Request, sessionKey, Username string) {
+	fmt.Printf("post article comment handler called with sessionKey=%s and username=%s \n", sessionKey, Username)
+	postArticleCommentRequest := requests.PostArticleCommentRequest{}
+	postArticleCommentRequest.Username = Username
+	vars := mux.Vars(r)
+	articleID := vars["articleID"]
+	postArticleCommentRequest.ArticleUUID = articleID
+	err := json.NewDecoder(r.Body).Decode(&postArticleCommentRequest)
+	if err != nil {
+		resp := responses.NewPostArticleCommentResponse()
+		resp.Error = constants.BadRequest
+		resp.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+		return
+	}
+	err = postArticleCommentRequest.Validate()
+	if err != nil {
+		resp := responses.NewPostArticleCommentResponse()
+		resp.Error = err.Error()
+		resp.Message = err.Error()
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	}
+	resp := services.PostArticleCommentService(postArticleCommentRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusCreated, resp, resp.Headers, resp.Cookies)
+	}
+}
+
+func GetArticleComments(w http.ResponseWriter, r *http.Request) {
+	getArticleCommentsRequest := requests.GetArticleCommentsRequest{}
+	vars := mux.Vars(r)
+	getArticleCommentsRequest.ArticleUUID = vars["articleID"]
+	fmt.Println("Get Article Comments called: ", getArticleCommentsRequest.ArticleUUID)
+	err := getArticleCommentsRequest.Validate()
+	if err != nil {
+		getArticleCommentsResponse := responses.NewGetArticleCommentsResponse()
+		getArticleCommentsResponse.Error = constants.BadRequest
+		getArticleCommentsResponse.Message = constants.BadRequest
+		WriteResponse(w, http.StatusBadRequest, getArticleCommentsResponse, getArticleCommentsResponse.Headers, getArticleCommentsResponse.Cookies)
+		return
+	}
+	resp := services.GetArticleCommentsService(getArticleCommentsRequest)
+	switch resp.Error {
+	case constants.BadRequest:
+		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
+	case constants.InternalServerError:
+		WriteResponse(w, http.StatusInternalServerError, resp, resp.Headers, resp.Cookies)
+	default:
+		WriteResponse(w, http.StatusOK, resp, resp.Headers, resp.Cookies)
+	}
+}
+
 func CorsHandler(w http.ResponseWriter, r *http.Request) {
 	corsResponse := responses.NewCORSResponse()
 	corsResponse.AddAllHeaders()
