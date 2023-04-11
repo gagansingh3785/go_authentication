@@ -12,7 +12,7 @@ import (
 const createArticleWithUsernameQuery = "INSERT INTO " + constants.ARTICLE_TABLE +
 	" (author, title, article_text, tags) VALUES ($1, $2, $3, $4) RETURNING article_id"
 const getCurrentPageArticlesQuery = "SELECT article_id, title, article_text, author, reads, id, tags FROM " + constants.ARTICLE_TABLE + " WHERE id > $1 and id <= $2"
-const getArticleDetailQuery = "SELECT article_id, author, title, article_text, reads FROM " + constants.ARTICLE_TABLE + " WHERE article_id=$1"
+const getArticleDetailQuery = "SELECT article_id, author, title, article_text, reads, tags, creation_time FROM " + constants.ARTICLE_TABLE + " WHERE article_id=$1"
 const updateArticleCountQuery = "UPDATE " + constants.ARTICLE_TABLE + " SET reads = reads + 1 WHERE article_id=$1 RETURNING reads"
 
 func CreateNewArticle(username, title, text string, tags []domain.Tag) (string, error) {
@@ -55,7 +55,8 @@ func GetCurrentPageArticles(currentPage int) ([]domain.Article, error) {
 func GetArticleDetail(articleID string) (domain.Article, error) {
 	article := domain.Article{}
 	row := database.DBConn.QueryRow(getArticleDetailQuery, articleID)
-	if err := row.Scan(&article.UUID, &article.Author, &article.Title, &article.Text, &article.Reads); err != nil {
+	if err := row.Scan(&article.UUID, &article.Author, &article.Title, &article.Text, &article.Reads, pq.Array(&article.Tags), &article.CreationTime); err != nil {
+		fmt.Println(err)
 		if err == sql.ErrNoRows {
 			return article, constants.ErrSQLNoRows
 		}
