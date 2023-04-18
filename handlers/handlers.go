@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request, sessionID, username string) {
 	fmt.Printf("Home page called with requestPayload: %+v\n", r)
 	homeRequest := requests.HomeRequest{}
 	pageNumber, err := strconv.Atoi(r.URL.Query().Get("pageNumber"))
@@ -32,7 +32,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
 		return
 	}
-	resp := services.HomeService(homeRequest)
+	resp := services.HomeService(homeRequest, username)
 	switch resp.Error {
 	case constants.ArticlePageNotFound:
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)
@@ -194,7 +194,7 @@ func Write(w http.ResponseWriter, r *http.Request, sessionKey, username string) 
 	}
 }
 
-func GetDetail(w http.ResponseWriter, r *http.Request) {
+func GetDetail(w http.ResponseWriter, r *http.Request, sessionID, username string) {
 	fmt.Println("Get Detail route called")
 	detailRequest := requests.GetDetailRequest{}
 	vars := mux.Vars(r)

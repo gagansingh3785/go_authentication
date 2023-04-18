@@ -11,4 +11,5 @@ type Article struct {
 	ID           int64     `db:"id"`
 	Tags         []string  `db:"tags"`
 	CreationTime time.Time `db:"creation_time" json:"creationTime"`
+	IsLiked      *bool     `json:"isLiked"`
 }

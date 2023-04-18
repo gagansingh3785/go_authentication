@@ -76,6 +76,37 @@ func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string, stri
 	}
 }
 
+func IsLoggedIn(next func(http.ResponseWriter, *http.Request, string, string)) requestHandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("IsLoggedIn Request Payload: %+v\n", r)
+		sessionCookie, err := r.Cookie(constants.SESSION_COOKIE)
+		if err != nil {
+			next(w, r, "", "")
+			return
+		}
+		w.Header().Add(constants.SESSION_COOKIE, sessionCookie.Value)
+		username, sessionID := parseSessionHeader(sessionCookie.Value)
+		user, err := repository.GetUserByUsername(username)
+		if err != nil {
+			next(w, r, "", "")
+			return
+		}
+		session, err := repository.GetSessionFromUserID(user.UUID)
+		switch err {
+		case constants.ErrSQLNoRows:
+			next(w, r, "", "")
+		case nil:
+			if session.SessionID != sessionID {
+				next(w, r, "", "")
+				return
+			}
+			next(w, r, session.SessionID, username)
+		default:
+			next(w, r, "", "")
+		}
+	}
+}
+
 func parseSessionHeader(sessionCookieString string) (string, string) {
 	username := ""
 	sessionID := ""

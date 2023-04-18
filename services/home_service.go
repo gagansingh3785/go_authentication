@@ -7,10 +7,23 @@ import (
 	"github.com/gagansingh3785/go_authentication/responses"
 )
 
-func HomeService(homeRequest requests.HomeRequest) responses.HomeResponse {
+func HomeService(homeRequest requests.HomeRequest, username string) responses.HomeResponse {
 	resp := responses.NewHomeResponse()
 	pageNumber := homeRequest.PageNumber
 	articles, err := repository.GetCurrentPageArticles(pageNumber)
+	if username != "" {
+		for i, _ := range articles {
+			isLikedArticleRequest := requests.IsLikedRequest{
+				ArticleID: articles[i].UUID,
+				Username:  username}
+			isLikedResp := IsLikedArticleService(isLikedArticleRequest)
+			if isLikedResp.Error != "" {
+				articles[i].IsLiked = nil
+				continue
+			}
+			articles[i].IsLiked = &(isLikedResp.IsLiked)
+		}
+	}
 
 	if err != nil {
 		resp.Error = constants.InternalServerError
