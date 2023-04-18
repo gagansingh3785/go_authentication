@@ -208,7 +208,7 @@ func GetDetail(w http.ResponseWriter, r *http.Request, sessionID, username strin
 		WriteResponse(w, http.StatusBadRequest, getDetailResponse, getDetailResponse.Headers, getDetailResponse.Cookies)
 		return
 	}
-	resp := services.GetDetailService(detailRequest)
+	resp := services.GetDetailService(detailRequest, username)
 	switch resp.Error {
 	case constants.BadRequest:
 		WriteResponse(w, http.StatusBadRequest, resp, resp.Headers, resp.Cookies)

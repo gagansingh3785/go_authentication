@@ -7,9 +7,20 @@ import (
 	"github.com/gagansingh3785/go_authentication/responses"
 )
 
-func GetDetailService(req requests.GetDetailRequest) responses.GetDetailResponse {
+func GetDetailService(req requests.GetDetailRequest, username string) responses.GetDetailResponse {
 	resp := responses.NewGetDetailResponse()
 	article, err := repository.GetArticleDetail(req.ArticleUUID)
+	if username != "" && err == nil {
+		isLikedArticleRequest := requests.IsLikedRequest{
+			ArticleID: article.UUID,
+			Username:  username}
+		isLikedResp := IsLikedArticleService(isLikedArticleRequest)
+		if isLikedResp.Error != "" {
+			article.IsLiked = nil
+		} else {
+			article.IsLiked = &(isLikedResp.IsLiked)
+		}
+	}
 	switch err {
 	case constants.ErrSQLNoRows:
 		resp.Error = constants.BadRequest
