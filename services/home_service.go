@@ -22,6 +22,8 @@ func HomeService(homeRequest requests.HomeRequest, username string) responses.Ho
 				continue
 			}
 			articles[i].IsLiked = &(isLikedResp.IsLiked)
+			commentCount, _ := repository.CountArticleCommentsFromArticleUUID(articles[i].UUID)
+			articles[i].Comments = commentCount
 		}
 	}
 

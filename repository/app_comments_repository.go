@@ -9,7 +9,8 @@ import (
 
 const (
 	createArticleCommentQuery             = "INSERT INTO " + constants.COMMENTS_TABLE + " (username, article_id, content) VALUES ($1, $2, $3) RETURNING username, article_id, comment_id, content, creation_time"
-	getArticleCommentFromArticleUUIDQuery = "SELECT username, article_id, comment_id, content, creation_time from " + constants.COMMENTS_TABLE + " WHERE article_id=$1 order by creation_time"
+	getArticleCommentFromArticleUUIDQuery = "SELECT username, article_id, comment_id, content, creation_time FROM " + constants.COMMENTS_TABLE + " WHERE article_id=$1 order by creation_time"
+	countArticleCommentsFromArticleQuery  = "SELECT COUNT(*) FROM " + constants.COMMENTS_TABLE + " WHERE article_id=$1"
 )
 
 func CreateNewComment(username, articleID, content string) (domain.Comment, error) {
@@ -40,4 +41,15 @@ func GetArticleCommentsFromArticleUUID(articleID string) ([]domain.Comment, erro
 		comments = append(comments, comment)
 	}
 	return comments, nil
+}
+
+func CountArticleCommentsFromArticleUUID(articleID string) (int, error) {
+	count := 0
+	row := database.DBConn.QueryRow(countArticleCommentsFromArticleQuery, articleID)
+	err := row.Scan(&count)
+	if err != nil {
+		fmt.Println("^^^^^^^^^^", err.Error())
+		return count, err
+	}
+	return count, nil
 }

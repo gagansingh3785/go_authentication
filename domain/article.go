@@ -12,4 +12,5 @@ type Article struct {
 	Tags         []string  `db:"tags"`
 	CreationTime time.Time `db:"creation_time" json:"creationTime"`
 	IsLiked      *bool     `json:"isLiked"`
+	Comments     int       `json:"comment_count"`
 }
