@@ -21,8 +21,8 @@ var randBytes = []byte{32, 12, 45, 54, 67, 42, 23, 200, 101, 234, 12, 222, 39, 9
 func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string, string)) requestHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Request Payload: %+v\n", r)
-		sessionCookie, err := r.Cookie(constants.SESSION_COOKIE)
-		if err != nil {
+		sessionCookie := r.Header.Get(constants.SESSION_COOKIE)
+		if sessionCookie == "" {
 			resp := responses.CommonResponse{
 				Error:   constants.InvalidCredentials,
 				Message: constants.InvalidCredentials,
@@ -30,8 +30,8 @@ func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string, stri
 			handlers.WriteResponse(w, http.StatusUnauthorized, resp, map[string]string{}, map[string]string{})
 			return
 		}
-		w.Header().Add(constants.SESSION_COOKIE, sessionCookie.Value)
-		username, sessionID := parseSessionHeader(sessionCookie.Value)
+		w.Header().Add(constants.SESSION_COOKIE, sessionCookie)
+		username, sessionID := parseSessionHeader(sessionCookie)
 		user, err := repository.GetUserByUsername(username)
 		if err != nil {
 			if err == constants.ErrSQLNoRows {
@@ -79,13 +79,13 @@ func AuthoriseSession(next func(http.ResponseWriter, *http.Request, string, stri
 func IsLoggedIn(next func(http.ResponseWriter, *http.Request, string, string)) requestHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("IsLoggedIn Request Payload: %+v\n", r)
-		sessionCookie, err := r.Cookie(constants.SESSION_COOKIE)
-		if err != nil {
+		sessionCookie := r.Header.Get(constants.SESSION_COOKIE)
+		if sessionCookie == "" {
 			next(w, r, "", "")
 			return
 		}
-		w.Header().Add(constants.SESSION_COOKIE, sessionCookie.Value)
-		username, sessionID := parseSessionHeader(sessionCookie.Value)
+		w.Header().Add(constants.SESSION_COOKIE, sessionCookie)
+		username, sessionID := parseSessionHeader(sessionCookie)
 		user, err := repository.GetUserByUsername(username)
 		if err != nil {
 			next(w, r, "", "")
